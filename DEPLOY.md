@@ -1,18 +1,16 @@
 # Guia de Deploy - Match&Learn
 
-## Arquitetura de Deploy (Vercel + Supabase)
+## Arquitetura de Deploy (Netlify + Supabase)
 
-Para o **Match&Learn**, utilizamos uma arquitetura moderna e robusta:
+Atendendo ao seu pedido, vamos utilizar:
 
-1.  **Frontend (O Site)**: Hospedado na **Vercel**. Ela roda o Next.js, as páginas e as animações.
-2.  **Backend (O Banco de Dados)**: Hospedado no **Supabase**. Ele guarda os usuários, saldos, gigs e perguntas.
-
-> **Nota**: O Supabase não hospeda o site Next.js sozinho. Eles trabalham juntos: A Vercel mostra o site e o site puxa os dados do Supabase.
+1.  **Frontend**: **Netlify**. Hospedagem robusta para sites Next.js.
+2.  **Backend**: **Supabase**. Banco de dados PostgreSQL.
 
 ## Pré-requisitos
 
 1.  **Repositório GitHub**: Certifique-se de que seu código está no GitHub (Já feito!).
-2.  **Conta Vercel**: Para colocar o site no ar.
+2.  **Conta Netlify**: Para colocar o site no ar.
 3.  **Conta Supabase**: Para criar o banco de dados.
 
 ## Passo 1: Configuração do Supabase (Banco de Dados)

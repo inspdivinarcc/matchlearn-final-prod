@@ -1,53 +1,49 @@
-# Deployment Guide - Match&Learn
+# Guia de Deploy - Match&Learn
 
-This guide covers how to deploy the Match&Learn application to production using Vercel and a PostgreSQL database (e.g., Supabase, Neon, or Vercel Postgres).
+Este guia cobre como implantar a aplicação Match&Learn em produção usando Vercel e um banco de dados PostgreSQL (ex: Supabase, Neon ou Vercel Postgres).
 
-## Prerequisites
+## Pré-requisitos
 
-1.  **GitHub Repository**: Ensure your code is pushed to a GitHub repository.
-2.  **Vercel Account**: Sign up at [vercel.com](https://vercel.com).
-3.  **Database**: A PostgreSQL database URL.
+1.  **Repositório GitHub**: Certifique-se de que seu código está no GitHub.
+2.  **Conta Vercel**: Crie uma conta em [vercel.com](https://vercel.com).
+3.  **Banco de Dados**: Uma URL de conexão PostgreSQL.
 
-## Step 1: Database Setup
+## Passo 1: Configuração do Banco de Dados
 
-1.  Create a new Postgres database (e.g., on Supabase).
-2.  Get the `DATABASE_URL` connection string.
-3.  Run migrations to create tables:
+1.  Crie um novo banco Postgres (recomendado: Supabase ou Neon Tech).
+2.  Obtenha a string de conexão `DATABASE_URL`.
+3.  Rodar migrações (na sua máquina local apontando para prod ou no build da Vercel):
     ```bash
     npx prisma migrate deploy
     ```
 
-## Step 2: Environment Variables
+## Passo 2: Variáveis de Ambiente
 
-Configure the following environment variables in your Vercel project settings:
+Configure as seguintes variáveis no seu projeto na Vercel:
 
-| Variable | Description | Example |
+| Variável | Descrição | Exemplo |
 | :--- | :--- | :--- |
-| `DATABASE_URL` | Postgres connection string | `postgresql://user:pass@host:5432/db` |
-| `NEXTAUTH_SECRET` | Random string for auth encryption | `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | Production URL (Vercel automatically handles this, but good to set) | `https://your-app.vercel.app` |
-| `WALLET_PRIVATE_KEY` | Private key for the server wallet (for minting) | `0x...` |
-| `NFT_CONTRACT_ADDRESS` | Address of your deployed NFT contract | `0x...` |
-| `ALCHEMY_RPC_URL` | RPC URL for the blockchain (e.g., Sepolia) | `https://eth-sepolia.g.alchemy.com/v2/...` |
-| `OPENAI_API_KEY` | (Optional) For real AI questions | `sk-...` |
+| `DATABASE_URL` | Conexão do Postgres | `postgresql://user:pass@host:5432/db` |
+| `NEXTAUTH_SECRET` | String aleatória para criptografia | `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | URL de produção | `https://seu-app.vercel.app` |
+| `WALLET_PRIVATE_KEY` | Chave privada da carteira do servidor | `0x...` |
+| `ALCHEMY_RPC_URL` | RPC URL (ex: Sepolia) | `https://eth-sepolia.g.alchemy.com/v2/...` |
+| `OPENAI_API_KEY` | (Opcional) Para IA real | `sk-...` |
 
-## Step 3: Deploy on Vercel
+## Passo 3: Deploy na Vercel
 
-1.  Import your GitHub repository in Vercel.
-2.  Vercel will detect the Next.js framework.
-3.  Add the Environment Variables from Step 2.
-4.  Click **Deploy**.
+1.  Importe seu repositório na Vercel.
+2.  A Vercel detectará o Next.js automaticamente.
+3.  Adicione as variáveis de ambiente.
+4.  Clique em **Deploy**.
 
-## Step 4: Post-Deployment
+## Passo 4: Pós-Deploy
 
-1.  **Seed Content**:
-    - Go to your deployed app.
-    - Log in.
-    - Click the "Seed Content" button (hidden in Home or via Admin) to populate the initial feed.
-2.  **Verify Web3**:
-    - Check if the "Invisible Wallet" is created for new users.
+1.  **Popular Conteúdo**:
+    - O banco começará vazio. Você precisará rodar o script de seed ou criar conteúdo via Admin.
+    - Se possível, rode `node scripts/seed-db.js` localmente conectado ao banco de produção (alterando temporariamente o `.env`).
 
-## Troubleshooting
+## Solução de Problemas
 
--   **Prisma Error**: If you see database errors, ensure you ran `npx prisma migrate deploy` locally pointing to the prod DB, or add a "Build Command" in Vercel: `npx prisma generate && next build`.
--   **Timeouts**: Server Actions have a timeout. If AI generation takes too long, Vercel might kill it (limit is usually 10s on free tier).
+-   **Erro do Prisma**: Se houver erros de banco, certifique-se de que `npx prisma migrate deploy` foi executado.
+-   **Timeouts**: Actions do Next.js têm limite de tempo na Vercel (plano Free).

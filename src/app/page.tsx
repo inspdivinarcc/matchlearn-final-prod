@@ -1,8 +1,17 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Rocket, Sparkles } from 'lucide-react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect('/home');
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-950 flex flex-col items-center justify-center text-white p-4 relative overflow-hidden">
       {/* Background Effects */}

@@ -1,92 +1,109 @@
-import { Suspense } from 'react';
-import { FeedSection } from './feed-section';
-import { FeedSkeleton } from '@/components/feed-skeleton';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { getUserWallet } from '@/server/actions/wallet';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Zap, Trophy } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { LiquidUI } from '@/components/trinity/LiquidUI';
+import { CupidMatch } from '@/components/trinity/CupidMatch';
+import { MarketView } from '@/components/trinity/MarketView';
+import { SmartEscrow } from '@/components/trinity/SmartEscrow';
+import { WalletPanel } from '@/components/trinity/WalletPanel';
+import { Activity, Hexagon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-export default async function HomePage() {
-    const session = await getServerSession(authOptions);
+export default function HomePage() {
+    const { data: session } = useSession();
     const user = session?.user as any;
+    const [walletAddress, setWalletAddress] = useState<string | null>(null);
+    const [bootSequence, setBootSequence] = useState(true);
 
-    // Fetch wallet
-    const walletData = await getUserWallet();
-    const walletAddress = walletData.success ? walletData.address : null;
+    useEffect(() => {
+        const timer = setTimeout(() => setBootSequence(false), 1500);
+        getUserWallet().then((data) => {
+            if (data.success && data.address) {
+                setWalletAddress(data.address);
+            }
+        });
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (bootSequence) {
+        return (
+            <div className="h-[calc(100vh-4rem)] w-full flex flex-col items-center justify-center text-neon-blue font-mono">
+                <div className="relative">
+                    <div className="absolute inset-0 bg-neon-blue blur-xl opacity-20 animate-pulse"></div>
+                    <Hexagon size={64} className="animate-spin-slow" />
+                </div>
+                <div className="mt-8 text-xl tracking-[0.5em] animate-pulse">TRINITY Σ</div>
+                <div className="mt-2 text-xs text-neon-purple opacity-70">LOADING NEURAL INTERFACE...</div>
+            </div>
+        );
+    }
 
     return (
-        <div className="container mx-auto p-4 space-y-6">
-            {/* Dev Tools (Temporary) */}
-            <div className="flex justify-end">
-                <form action={async () => {
-                    'use server';
-                    const { seedInitialContent } = await import('@/server/actions/seed');
-                    await seedInitialContent();
-                }}>
-                    <Button variant="outline" size="sm" type="submit">
-                        🌱 Seed Content
-                    </Button>
-                </form>
-            </div>
-
-            {/* Header Section */}
-            <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-6 rounded-xl border border-indigo-500/20">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="max-w-7xl mx-auto p-4 md:p-8"
+        >
+            {/* Header Info */}
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">
-                        Olá, {user?.name?.split(' ')[0] || 'Herói'}! 👋
+                    <h1 className="text-2xl font-bold tracking-widest text-white">
+                        WELCOME, <span className="text-neon-blue">{user?.name?.split(' ')[0]?.toUpperCase() || 'OPERATOR'}</span>
                     </h1>
-                    <p className="text-muted-foreground mt-1">
-                        Sua jornada de aprendizado continua.
-                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] font-mono text-gray-400 uppercase">
+                            ID: {user?.id?.slice(0, 8) || 'UNKNOWN'} • CLEARANCE: LEVEL 5
+                        </span>
+                    </div>
                 </div>
 
-                {/* Wallet Status */}
-                <div className="flex items-center gap-2 bg-background/50 p-2 rounded-lg border shadow-sm">
-                    <div className={`h-2 w-2 rounded-full ${walletAddress ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                    <span className="text-xs font-mono text-muted-foreground">
-                        {walletAddress ?
-                            `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}` :
-                            'Criando Wallet...'}
-                    </span>
-                    {walletAddress && <Badge variant="secondary" className="text-[10px] h-5">Invisible Web3</Badge>}
+                <div className="hidden md:flex items-center gap-6">
+                    <div className="text-right">
+                        <div className="text-[10px] text-gray-500 font-mono uppercase">Network Latency</div>
+                        <div className="text-neon-blue font-mono">12ms</div>
+                    </div>
+                    <div className="h-8 w-[1px] bg-white/10"></div>
+                    <div className="text-right">
+                        <div className="text-[10px] text-gray-500 font-mono uppercase">Cpu Load</div>
+                        <div className="text-neon-purple font-mono">14%</div>
+                    </div>
                 </div>
-            </header>
-
-            {/* Stats Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Energia Diária</CardTitle>
-                        <Zap className="h-4 w-4 text-yellow-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">100/100</div>
-                        <Progress value={100} className="mt-2" />
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Vitórias na Arena</CardTitle>
-                        <Trophy className="h-4 w-4 text-orange-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">0</div>
-                        <p className="text-xs text-muted-foreground">+0% essa semana</p>
-                    </CardContent>
-                </Card>
             </div>
 
-            {/* Feed Section with Suspense */}
-            <div className="space-y-4">
-                <h2 className="text-2xl font-bold tracking-tight">Sua Jornada</h2>
-                <Suspense fallback={<FeedSkeleton />}>
-                    <FeedSection />
-                </Suspense>
+            {/* Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+                {/* Column 1: Profile & Skills */}
+                <div className="md:col-span-3 space-y-6">
+                    <LiquidUI title="NEURAL_MATCH" cognitiveLoad="high">
+                        <CupidMatch />
+                    </LiquidUI>
+                    <div className="p-4 rounded-xl border border-dashed border-white/10 text-center hover:border-neon-blue/30 transition-colors cursor-pointer group">
+                        <Activity size={24} className="mx-auto text-gray-600 mb-2 group-hover:text-neon-blue transition-colors" />
+                        <div className="text-xs text-gray-500 uppercase font-mono group-hover:text-gray-300">System Monitoring Active</div>
+                    </div>
+                </div>
+
+                {/* Column 2: Market Feed */}
+                <div className="md:col-span-5">
+                    <LiquidUI title="MARKET_FEED" cognitiveLoad="low">
+                        <MarketView />
+                    </LiquidUI>
+                </div>
+
+                {/* Column 3: Wallet & Escrow */}
+                <div className="md:col-span-4 space-y-6">
+                    <LiquidUI title="WALLET_HOLO" cognitiveLoad="low">
+                        <WalletPanel />
+                    </LiquidUI>
+                    <LiquidUI title="SMART_ESCROW" cognitiveLoad="high">
+                        <SmartEscrow />
+                    </LiquidUI>
+                </div>
+
             </div>
-        </div>
+        </motion.div>
     );
 }

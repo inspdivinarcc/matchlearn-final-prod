@@ -70,30 +70,30 @@ export default async function InventoryPage() {
                 <ScrollArea className="h-[calc(100vh-350px)]">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 pb-4">
                         {nfts.map((nft) => (
-                            <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow border-2 border-transparent hover:border-indigo-500/50">
-                                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                    <Trophy className="h-16 w-16 text-gray-400" />
+                            <Card key={nft.id} className="overflow-hidden hover:shadow-lg transition-shadow border-2 border-slate-800 bg-slate-900 hover:border-indigo-500/50">
+                                <div className="aspect-square bg-gradient-to-br from-slate-800 to-slate-700 flex items-center justify-center">
+                                    <Trophy className="h-16 w-16 text-slate-500" />
                                 </div>
                                 <CardHeader className="p-4">
-                                    <CardTitle className="text-base">{nft.name}</CardTitle>
-                                    <Badge variant="outline" className="mt-1 w-fit">
+                                    <CardTitle className="text-base text-slate-200">{nft.name}</CardTitle>
+                                    <Badge variant="outline" className="mt-1 w-fit border-slate-700 text-slate-400">
                                         {nft.rarity}
                                     </Badge>
                                 </CardHeader>
                                 <CardContent className="p-4 pt-0">
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-xs text-slate-500">
                                         Token ID: #{nft.tokenId || '???'}
                                     </p>
                                 </CardContent>
                             </Card>
                         ))}
                         {nfts.length === 0 && (
-                            <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border-2 border-dashed rounded-xl bg-muted/20">
-                                <div className="bg-muted p-4 rounded-full mb-4">
-                                    <Wallet className="h-8 w-8 text-muted-foreground" />
+                            <div className="col-span-full flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/50">
+                                <div className="bg-slate-800 p-4 rounded-full mb-4">
+                                    <Wallet className="h-8 w-8 text-slate-500" />
                                 </div>
-                                <h3 className="text-lg font-medium">Inventário Vazio</h3>
-                                <p className="text-muted-foreground max-w-sm mt-2">
+                                <h3 className="text-lg font-medium text-slate-200">Inventário Vazio</h3>
+                                <p className="text-slate-400 max-w-sm mt-2">
                                     Suba de nível para ganhar Badges e NFTs exclusivos.
                                 </p>
                             </div>

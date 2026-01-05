@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -32,6 +32,30 @@ model User {
   progress      UserProgress[]
   battlesAsP1   Battle[] @relation("Player1")
   battlesAsP2   Battle[] @relation("Player2")
+
+  // Social
+  posts         Post[]
+  likes         Like[]
+  comments      Comment[]
+  stories       Story[]
+
+  // Teams
+  ownedProjects Project[] @relation("ProjectOwner")
+  teamMemberships TeamMember[]
+
+  // Wallet & Mentorship
+  transactions    Transaction[]
+  mentorSessions  MentorshipSession[] @relation("MentorSessions")
+  studentSessions MentorshipSession[] @relation("StudentSessions")
+  gigApplications GigApplication[]
+
+  // Neural Profile (VAK)
+  bio           String?
+  skills        String?  // JSON string
+  vakVisual     Int      @default(0)
+  vakAuditory   Int      @default(0)
+  vakKinesthetic Int     @default(0)
+  learningStyle String?  // 'VISUAL', 'AUDITORY', 'KINESTHETIC'
 }
 
 model Account {
@@ -41,12 +65,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
 
   @@unique([provider, providerAccountId])
@@ -109,7 +133,7 @@ model Content {
   title       String
   type        String   // 'quiz', 'article', 'video', 'challenge'
   description String?
-  body        String?  @db.Text
+  body        String?
   xpReward    Int      @default(10)
   coinsReward Int      @default(5)
   createdAt   DateTime @default(now())
@@ -137,4 +161,127 @@ model Battle {
   winnerId  String?
   status    String   // 'pending', 'active', 'completed'
   createdAt DateTime @default(now())
+}
+
+// Social Features
+
+model Post {
+  id        String    @id @default(cuid())
+  content   String
+  imageUrl  String?
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id])
+  likes     Like[]
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  
+  @@unique([postId, userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  imageUrl  String?
+  content   String?
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// Team Match Features
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  tags        String   // Stored as JSON string "['React', 'Node']"
+  ownerId     String
+  owner       User     @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members     TeamMember[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  role      String   // 'owner', 'member', 'pending'
+  joinedAt  DateTime @default(now())
+  
+  @@unique([projectId, userId])
+}
+
+// Wallet & Earnings
+
+model Transaction {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Float
+  currency  String   // 'COIN', 'GEM', 'USD'
+  type      String   // 'EARN', 'SPEND', 'WITHDRAW'
+  description String
+  createdAt DateTime @default(now())
+}
+
+model MentorshipSession {
+  id        String   @id @default(cuid())
+  mentorId  String
+  mentor    User     @relation("MentorSessions", fields: [mentorId], references: [id])
+  studentId String
+  student   User     @relation("StudentSessions", fields: [studentId], references: [id])
+  duration  Int?     // minutes
+  cost      Float?
+  status    String   @default("PENDING") // 'PENDING', 'ACTIVE', 'COMPLETED'
+  createdAt DateTime @default(now())
+}
+
+// Trinity Gig Board
+
+model Gig {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  reward      Int
+  difficulty  String   // 'Easy', 'Medium', 'Hard'
+  type        String   // 'Security', 'Frontend', 'Backend', etc.
+  timeEstimate String
+  status      String   @default("OPEN") // 'OPEN', 'CLOSED'
+  
+  applications GigApplication[]
+  createdAt   DateTime @default(now())
+}
+
+model GigApplication {
+  id        String   @id @default(cuid())
+  gigId     String
+  gig       Gig      @relation(fields: [gigId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  status    String   @default("PENDING") // 'PENDING', 'ACCEPTED', 'COMPLETED'
+  createdAt DateTime @default(now())
+
+  @@unique([gigId, userId])
 }

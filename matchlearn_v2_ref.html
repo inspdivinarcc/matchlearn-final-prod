@@ -1,0 +1,3319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match&Learn Pro Ultimate - The Complete Educational Ecosystem</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --premium-gradient: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            --legendary-gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            --mythic-gradient: linear-gradient(135deg, #9c27b0 0%, #e91e63 100%);
+            --glass: rgba(30, 41, 59, 0.8);
+            --glass-border: rgba(99, 102, 241, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* Advanced Background Animation */
+        .bg-animation {
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: linear-gradient(45deg, #0f172a, #1e293b);
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 1%, transparent 1%);
+            background-size: 50px 50px;
+            animation: bgMove 30s linear infinite;
+        }
+
+        .bg-animation::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(139, 92, 246, 0.05) 50%, transparent 70%);
+            animation: bgShimmer 8s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        @keyframes bgShimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Floating Elements */
+        .floating-particle {
+            position: fixed;
+            pointer-events: none;
+            opacity: 0.4;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            25% { transform: translateY(-150px) translateX(100px) rotate(90deg); }
+            50% { transform: translateY(-50px) translateX(-150px) rotate(180deg); }
+            75% { transform: translateY(100px) translateX(150px) rotate(270deg); }
+        }
+
+        /* Premium Effects */
+        .premium-glow {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            animation: premiumPulse 3s infinite;
+        }
+
+        @keyframes premiumPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
+        }
+
+        /* Rarity Gradients */
+        .rarity-common { background: linear-gradient(135deg, #94a3b8, #cbd5e1); }
+        .rarity-uncommon { background: linear-gradient(135deg, #10b981, #34d399); }
+        .rarity-rare { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+        .rarity-epic { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+        .rarity-legendary { background: var(--legendary-gradient); }
+        .rarity-mythic { background: var(--mythic-gradient); }
+
+        /* Login Screen */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--bg-gradient);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 90px;
+            height: 90px;
+            background: var(--bg-gradient);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            margin: 0 auto 20px;
+            animation: logoFloat 4s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .logo-text {
+            font-size: 36px;
+            font-weight: 800;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            color: #94a3b8;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 14px;
+            color: #e2e8f0;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--bg-gradient);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--glass-border);
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .btn-premium {
+            background: var(--premium-gradient);
+            color: #0f172a;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            min-height: 100vh;
+            background: #0f172a;
+        }
+
+        .header {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            animation: brandPulse 3s infinite;
+        }
+
+        @keyframes brandPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 14px;
+            padding: 10px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 90px;
+            transition: all 0.3s;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-2px);
+            background: rgba(99, 102, 241, 0.15);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #e2e8f0;
+            margin-top: 2px;
+        }
+
+        .user-avatar {
+            width: 52px;
+            height: 52px;
+            background: var(--bg-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            color: white;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 20px;
+            margin-bottom: 32px;
+            overflow-x: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            padding: 14px 28px;
+            background: transparent;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+
+        .tab:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        .tab.active {
+            background: var(--bg-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 800;
+            animation: badgePulse 2s infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 32px;
+        }
+
+        .main-panel {
+            min-height: 600px;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 24px;
+            padding: 28px;
+            animation: fadeIn 0.6s ease-out;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Feed Styles */
+        .feed-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            animation: slideIn 0.5s ease-out;
+            transition: all 0.3s;
+        }
+
+        .feed-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .feed-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .feed-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            font-size: 18px;
+        }
+
+        .feed-user-info {
+            flex: 1;
+        }
+
+        .feed-username {
+            font-weight: 700;
+            color: #e2e8f0;
+            font-size: 16px;
+        }
+
+        .feed-time {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .feed-content {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .feed-actions {
+            display: flex;
+            gap: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .feed-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .feed-action:hover {
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .feed-action.liked {
+            color: var(--danger);
+        }
+
+        /* Social Instagram-like */
+        .stories-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px 0;
+            overflow-x: auto;
+            margin-bottom: 32px;
+        }
+
+        .story {
+            min-width: 90px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .story-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--bg-gradient);
+            padding: 4px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .story-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .story-avatar-inner {
+            width: 100%;
+            height: 100%;
+            background: #1e293b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .story-username {
+            font-size: 12px;
+            text-align: center;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .social-post {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .social-post:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(99, 102, 241, 0.3);
+        }
+
+        .social-post-image {
+            width: 100%;
+            height: 220px;
+            background: var(--bg-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+        }
+
+        .social-post-content {
+            padding: 20px;
+        }
+
+        .social-post-text {
+            font-size: 15px;
+            color: #cbd5e1;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .social-post-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* Quest System */
+        .quest-container {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 2px solid var(--secondary);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .quest-question {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #e2e8f0;
+        }
+
+        .quest-options {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .quest-option {
+            padding: 16px 24px;
+            background: rgba(30, 41, 59, 0.5);
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .quest-option:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quest-option.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success);
+        }
+
+        .quest-option.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--danger);
+        }
+
+        .quest-timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .timer-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--bg-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .quest-progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .quest-progress-fill {
+            height: 100%;
+            background: var(--bg-gradient);
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .quest-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Courses Grid */
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .course-card {
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+            border-color: var(--primary);
+        }
+
+        .course-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: var(--bg-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            position: relative;
+        }
+
+        .course-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--danger);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .course-info {
+            padding: 24px;
+        }
+
+        .course-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+
+        .course-instructor {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 16px;
+        }
+
+        .course-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .course-progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.5s;
+        }
+
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #f59e0b;
+        }
+
+        /* Marketplace */
+        .marketplace-filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .marketplace-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .marketplace-item {
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .marketplace-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .marketplace-item.legendary {
+            border: 2px solid #ff6b35;
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(30, 41, 59, 0.6));
+        }
+
+        .marketplace-item.mythic {
+            border: 2px solid #e91e63;
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.1), rgba(30, 41, 59, 0.6));
+        }
+
+        .rarity-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .item-icon {
+            font-size: 64px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .item-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+
+        .item-description {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .item-price {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .price-tag {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .price-currency {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        /* Video Call Interface */
+        .video-call-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .video-call-overlay.active {
+            display: flex;
+        }
+
+        .video-call-container {
+            width: 95%;
+            max-width: 1400px;
+            height: 85vh;
+            background: var(--dark);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            padding: 16px;
+            height: calc(100% - 80px);
+        }
+
+        .video-participant {
+            background: #000;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .participant-avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--bg-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .participant-name {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .video-control-btn {
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+        }
+
+        .video-control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .video-control-btn.end {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        /* AI Matching */
+        .ai-match-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.1));
+            border: 2px solid var(--secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-match-card::before {
+            content: 'AI POWERED';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--secondary);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .match-score {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 16px 0;
+            padding: 12px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+        }
+
+        .match-score-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .match-score-fill {
+            height: 100%;
+            background: var(--bg-gradient);
+            transition: width 0.8s ease;
+        }
+
+        .match-score-text {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Code Collaboration */
+        .code-editor {
+            background: #1e1e1e;
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            overflow: hidden;
+        }
+
+        .code-editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-tab {
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .code-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .code-area {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 350px;
+            color: #d4d4d4;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .collaborators {
+            display: flex;
+            gap: 8px;
+        }
+
+        .collaborator {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: white;
+            border: 2px solid var(--glass-border);
+        }
+
+        /* Premium Plans */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .pricing-card {
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            position: relative;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(99, 102, 241, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: #ffd700;
+            transform: scale(1.05);
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(30, 41, 59, 0.6));
+        }
+
+        .pricing-card.featured::before {
+            content: 'MAIS POPULAR';
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--premium-gradient);
+            color: #0f172a;
+            padding: 8px 20px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .pricing-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #e2e8f0;
+        }
+
+        .pricing-price {
+            font-size: 48px;
+            font-weight: 800;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 32px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* Live Status Indicators */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--danger);
+            text-transform: uppercase;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            animation: livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 20px 28px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transform: translateX(400px);
+            transition: transform 0.4s ease;
+            z-index: 1001;
+            border-left: 4px solid var(--primary);
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-left-color: var(--success);
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast-message {
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal {
+            background: var(--glass);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #e2e8f0;
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* XP Animation */
+        .xp-gain {
+            position: fixed;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--success);
+            pointer-events: none;
+            animation: xpFloat 2.5s ease-out forwards;
+            z-index: 999;
+        }
+
+        @keyframes xpFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-120px) scale(1.2);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .content-area {
+                grid-template-columns: 1fr;
+            }
+
+            .side-panel {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+
+            .video-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .stats-bar {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .nav-tabs {
+                padding: 16px;
+            }
+
+            .tab {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .pricing-grid,
+            .marketplace-grid,
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .main-container {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 24px;
+            }
+
+            .logo {
+                width: 70px;
+                height: 70px;
+                font-size: 35px;
+            }
+
+            .logo-text {
+                font-size: 28px;
+            }
+
+            .modal {
+                padding: 24px;
+            }
+
+            .video-call-container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <!-- Enhanced Floating Particles -->
+    <div class="floating-particle" style="top: 10%; left: 10%; font-size: 24px;">✨</div>
+    <div class="floating-particle" style="top: 80%; left: 90%; font-size: 28px; animation-delay: 5s;">⭐</div>
+    <div class="floating-particle" style="top: 50%; left: 5%; font-size: 20px; animation-delay: 10s;">💫</div>
+    <div class="floating-particle" style="top: 30%; left: 80%; font-size: 22px; animation-delay: 15s;">🚀</div>
+    <div class="floating-particle" style="top: 70%; left: 20%; font-size: 26px; animation-delay: 20s;">🎯</div>
+    
+    <div id="root"></div>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useRef } = React;
+
+        // Enhanced WebSocket Manager
+        class WebSocketManager {
+            constructor(onMessage) {
+                this.connected = false;
+                this.onMessage = onMessage;
+                this.messageQueue = [];
+                this.connect();
+            }
+
+            connect() {
+                setTimeout(() => {
+                    this.connected = true;
+                    this.simulateRealTimeEvents();
+                }, 1000);
+            }
+
+            simulateRealTimeEvents() {
+                const events = [
+                    { type: 'user_joined', data: { username: 'CodeMaster', level: 67, action: 'entrou na plataforma' } },
+                    { type: 'achievement_unlock', data: { user: 'DevGirl', achievement: 'JavaScript Ninja', xp: 500 } },
+                    { type: 'team_invite', data: { team: 'Silicon Dreamers', from: 'Alex Chen', project: 'AI Startup' } },
+                    { type: 'challenge_start', data: { challenge: 'React Hooks Master', participants: 156 } },
+                    { type: 'live_coding', data: { user: 'TechNinja', language: 'Python', project: 'ML Model' } },
+                    { type: 'marketplace_sale', data: { item: 'Golden Badge NFT', buyer: 'CryptoLearner', price: 'R$ 500' } },
+                    { type: 'course_complete', data: { user: 'StudyPro', course: 'Advanced React', rating: 5 } },
+                    { type: 'match_found', data: { user1: 'BackendDev', user2: 'FrontendPro', compatibility: 94 } }
+                ];
+
+                setInterval(() => {
+                    if (this.connected && Math.random() > 0.6) {
+                        const event = events[Math.floor(Math.random() * events.length)];
+                        this.onMessage(event);
+                    }
+                }, 4000);
+            }
+
+            send(message) {
+                return new Promise((resolve) => {
+                    this.messageQueue.push(message);
+                    console.log('📡 WebSocket sent:', message);
+                    resolve({ status: 'sent', timestamp: Date.now() });
+                });
+            }
+
+            disconnect() {
+                this.connected = false;
+            }
+        }
+
+        // Enhanced Sound System
+        const SoundManager = {
+            playSound: (type, volume = 0.1) => {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    const sounds = {
+                        notification: { freq: 600, duration: 0.1 },
+                        success: { freq: 800, duration: 0.15 },
+                        levelup: { freq: 1000, duration: 0.3 },
+                        error: { freq: 300, duration: 0.2 },
+                        coin: { freq: 1200, duration: 0.1 },
+                        achievement: { freq: 880, duration: 0.25 },
+                        call: { freq: 440, duration: 0.5 }
+                    };
+
+                    const sound = sounds[type] || sounds.notification;
+                    oscillator.frequency.value = sound.freq;
+                    gainNode.gain.value = volume;
+                    
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + sound.duration);
+                } catch (error) {
+                    console.log('Audio context not available');
+                }
+            }
+        };
+
+        // Enhanced Toast Component
+        function Toast({ message, type, onClose }) {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 4000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+
+            return (
+                <div className={`toast show ${type}`}>
+                    <span style={{ fontSize: '20px' }}>{icons[type] || 'ℹ️'}</span>
+                    <span className="toast-message">{message}</span>
+                </div>
+            );
+        }
+
+        // XP Animation Component
+        function XPGain({ x, y, amount, reason }) {
+            return (
+                <div className="xp-gain" style={{ left: x, top: y }}>
+                    +{amount} XP
+                    <div style={{ fontSize: '14px', marginTop: '4px' }}>{reason}</div>
+                </div>
+            );
+        }
+
+        // Enhanced Login Screen
+        function LoginScreen({ onLogin }) {
+            const [formData, setFormData] = useState({
+                username: '',
+                email: '',
+                role: 'student'
+            });
+            const [loading, setLoading] = useState(false);
+
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({ ...prev, [field]: value }));
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (formData.username && formData.email) {
+                    setLoading(true);
+                    SoundManager.playSound('success');
+                    setTimeout(() => {
+                        onLogin(formData);
+                    }, 1500);
+                }
+            };
+
+            return (
+                <div className="login-container">
+                    <div className="login-card">
+                        <div className="logo-container">
+                            <div className="logo">🚀</div>
+                            <h1 className="logo-text">Match&Learn Pro</h1>
+                            <p className="tagline">The Ultimate Educational Ecosystem</p>
+                        </div>
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>👤 Nome de Usuário</label>
+                                <input
+                                    type="text"
+                                    value={formData.username}
+                                    onChange={(e) => handleInputChange('username', e.target.value)}
+                                    placeholder="Escolha seu nome épico"
+                                    required
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>📧 Email</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => handleInputChange('email', e.target.value)}
+                                    placeholder="seu@email.com"
+                                    required
+                                    disabled={loading}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>🎯 Seu Perfil</label>
+                                <select
+                                    value={formData.role}
+                                    onChange={(e) => handleInputChange('role', e.target.value)}
+                                    disabled={loading}
+                                >
+                                    <option value="student">🎓 Estudante</option>
+                                    <option value="developer">💻 Desenvolvedor</option>
+                                    <option value="mentor">🧑‍🏫 Mentor</option>
+                                    <option value="entrepreneur">🚀 Empreendedor</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" className="btn" disabled={loading}>
+                                {loading ? <span className="loading"></span> : '🚀 Entrar no Futuro'}
+                            </button>
+                        </form>
+
+                        <div style={{ marginTop: '32px', display: 'grid', gap: '16px' }}>
+                            <div style={{ 
+                                padding: '24px', 
+                                background: 'rgba(99, 102, 241, 0.1)', 
+                                borderRadius: '16px',
+                                border: '1px solid rgba(99, 102, 241, 0.2)'
+                            }}>
+                                <h3 style={{ fontSize: '16px', marginBottom: '16px', color: '#e2e8f0', textAlign: 'center' }}>
+                                    🌟 Recursos Únicos da Plataforma
+                                </h3>
+                                <div style={{ display: 'grid', gap: '10px', fontSize: '13px', color: '#94a3b8' }}>
+                                    <div>🎮 Gamificação com NFTs e Raridades</div>
+                                    <div>🤖 IA para Matching de Equipes</div>
+                                    <div>📹 Video Calls HD para 100+ pessoas</div>
+                                    <div>💻 Code Collaboration em Tempo Real</div>
+                                    <div>🏆 Desafios Patrocinados com Prêmios</div>
+                                    <div>🛍️ Marketplace de Assets Digitais</div>
+                                    <div>📱 Feed Social estilo Instagram</div>
+                                    <div>⚡ Sistema de Economia Tripla</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Enhanced Feed Component
+        function FeedView({ user, showToast, createXPGain }) {
+            const [feedItems, setFeedItems] = useState([
+                {
+                    id: 1,
+                    username: 'CodeMaster',
+                    avatar: 'C',
+                    verified: true,
+                    time: 'há 5 minutos',
+                    type: 'achievement',
+                    content: '🎯 ACHIEVEMENT UNLOCKED! Acabei de conquistar o badge "JavaScript Ninja" completando 50 desafios avançados em sequência! 🔥',
+                    likes: 247,
+                    comments: 89,
+                    shares: 34,
+                    liked: false,
+                    media: '🏆'
+                },
+                {
+                    id: 2,
+                    username: 'DevGirl',
+                    avatar: 'D',
+                    verified: true,
+                    time: 'há 15 minutos',
+                    type: 'team',
+                    content: '🚀 TEAM FORMATION! Nossa equipe "Silicon Dreamers" está buscando um especialista em Machine Learning para projeto de startup!',
+                    likes: 156,
+                    comments: 67,
+                    shares: 23,
+                    liked: true,
+                    media: '🤝'
+                },
+                {
+                    id: 3,
+                    username: 'TechNinja',
+                    avatar: 'T',
+                    verified: false,
+                    time: 'há 45 minutos',
+                    type: 'tip',
+                    content: '💡 PRO TIP: Sempre use destructuring em JavaScript para código mais limpo!',
+                    likes: 892,
+                    comments: 134,
+                    shares: 278,
+                    liked: false,
+                    media: '💻'
+                }
+            ]);
+
+            const [newPost, setNewPost] = useState('');
+
+            const handleLike = (id) => {
+                setFeedItems(feedItems.map(item => {
+                    if (item.id === id) {
+                        const wasLiked = item.liked;
+                        SoundManager.playSound(wasLiked ? 'notification' : 'success');
+                        
+                        if (!wasLiked) {
+                            createXPGain(10, '❤️ Social Interaction');
+                        }
+                        
+                        return {
+                            ...item,
+                            liked: !item.liked,
+                            likes: item.liked ? item.likes - 1 : item.likes + 1
+                        };
+                    }
+                    return item;
+                }));
+            };
+
+            const handlePost = () => {
+                if (newPost.trim()) {
+                    const post = {
+                        id: Date.now(),
+                        username: user.username,
+                        avatar: user.username[0].toUpperCase(),
+                        verified: user.verified || false,
+                        time: 'agora',
+                        type: 'general',
+                        content: newPost,
+                        likes: 0,
+                        comments: 0,
+                        shares: 0,
+                        liked: false,
+                        media: '📝'
+                    };
+                    
+                    setFeedItems([post, ...feedItems]);
+                    setNewPost('');
+                    showToast('📝 Post publicado com sucesso!', 'success');
+                    createXPGain(25, '📝 Content Creation');
+                    SoundManager.playSound('levelup');
+                }
+            };
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">📱 Feed de Atividades</h2>
+
+                    {/* Post Creator */}
+                    <div style={{ 
+                        background: 'var(--glass)', 
+                        border: '2px solid var(--glass-border)', 
+                        borderRadius: '20px', 
+                        padding: '24px', 
+                        marginBottom: '32px' 
+                    }}>
+                        <textarea
+                            style={{
+                                width: '100%',
+                                background: 'rgba(15, 23, 42, 0.5)',
+                                border: '1px solid var(--glass-border)',
+                                borderRadius: '16px',
+                                padding: '16px',
+                                color: '#e2e8f0',
+                                fontSize: '15px',
+                                minHeight: '80px',
+                                resize: 'none'
+                            }}
+                            placeholder="Compartilhe suas conquistas, insights ou faça uma pergunta..."
+                            value={newPost}
+                            onChange={(e) => setNewPost(e.target.value)}
+                        />
+                        <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+                            <button 
+                                className="btn btn-secondary" 
+                                onClick={handlePost}
+                                disabled={!newPost.trim()}
+                                style={{ width: 'auto', padding: '12px 24px' }}
+                            >
+                                🚀 Publicar
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Feed Items */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        {feedItems.map(item => (
+                            <div key={item.id} className="feed-item">
+                                <div className="feed-header">
+                                    <div className="feed-avatar">{item.avatar}</div>
+                                    <div className="feed-user-info" style={{ flex: 1 }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span className="feed-username">{item.username}</span>
+                                            {item.verified && <span style={{ color: '#3b82f6' }}>✓</span>}
+                                        </div>
+                                        <div className="feed-time">{item.time}</div>
+                                    </div>
+                                    <div style={{ fontSize: '24px' }}>{item.media}</div>
+                                </div>
+                                
+                                <div className="feed-content">{item.content}</div>
+                                
+                                <div className="feed-actions">
+                                    <div 
+                                        className={`feed-action ${item.liked ? 'liked' : ''}`}
+                                        onClick={() => handleLike(item.id)}
+                                    >
+                                        <span>{item.liked ? '❤️' : '🤍'}</span>
+                                        <span>{item.likes}</span>
+                                    </div>
+                                    <div className="feed-action">
+                                        <span>💬</span>
+                                        <span>{item.comments}</span>
+                                    </div>
+                                    <div className="feed-action">
+                                        <span>🔄</span>
+                                        <span>{item.shares}</span>
+                                    </div>
+                                    <div className="feed-action">
+                                        <span>🔖</span>
+                                        <span>Salvar</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Enhanced Social Component
+        function SocialView({ user, showToast, createXPGain }) {
+            const [posts, setPosts] = useState([
+                { id: 1, emoji: '🏆', text: 'Conquistei o nível 50!', likes: 234, comments: 45 },
+                { id: 2, emoji: '📚', text: 'Finalizei o curso completo de React', likes: 189, comments: 32 },
+                { id: 3, emoji: '🔥', text: 'STREAK de 30 dias!', likes: 456, comments: 78 },
+                { id: 4, emoji: '💻', text: 'Meu primeiro app mobile publicado', likes: 567, comments: 123 },
+                { id: 5, emoji: '🎯', text: 'PERFECT SCORE no desafio!', likes: 345, comments: 67 },
+                { id: 6, emoji: '🚀', text: 'Entrei para equipe #1 do ranking!', likes: 890, comments: 156 }
+            ]);
+
+            const stories = [
+                { id: 1, username: 'CodeMaster', emoji: '🔥', hasNew: true },
+                { id: 2, username: 'DevGirl', emoji: '💡', hasNew: true },
+                { id: 3, username: 'TechNinja', emoji: '🚀', hasNew: false },
+                { id: 4, username: 'AIExpert', emoji: '🤖', hasNew: true },
+                { id: 5, username: 'FullStackDev', emoji: '⚡', hasNew: false },
+                { id: 6, username: 'DataScientist', emoji: '📊', hasNew: true }
+            ];
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">📸 Social Hub</h2>
+
+                    {/* Stories */}
+                    <div className="stories-container">
+                        <div className="story">
+                            <div className="story-avatar" style={{ background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)' }}>
+                                <div className="story-avatar-inner">➕</div>
+                            </div>
+                            <div className="story-username">Criar</div>
+                        </div>
+                        
+                        {stories.map(story => (
+                            <div key={story.id} className="story" onClick={() => showToast(`👀 Visualizando story de ${story.username}`, 'info')}>
+                                <div className="story-avatar" style={{
+                                    border: story.hasNew ? '3px solid #10b981' : '3px solid #64748b'
+                                }}>
+                                    <div className="story-avatar-inner">{story.emoji}</div>
+                                </div>
+                                <div className="story-username">{story.username}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Posts Grid */}
+                    <div className="social-grid">
+                        {posts.map(post => (
+                            <div key={post.id} className="social-post" onClick={() => {
+                                showToast('📸 Post aberto!', 'info');
+                                createXPGain(5, '👀 View');
+                            }}>
+                                <div className="social-post-image">{post.emoji}</div>
+                                <div className="social-post-content">
+                                    <div className="social-post-text">{post.text}</div>
+                                    <div className="social-post-stats">
+                                        <span>❤️ {post.likes}</span>
+                                        <span>💬 {post.comments}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Quest Component
+        function QuestView({ user, updateUser, showToast, createXPGain }) {
+            const [currentQuest, setCurrentQuest] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [timer, setTimer] = useState(30);
+
+            const quests = [
+                {
+                    id: 1,
+                    difficulty: 'Fácil',
+                    question: "Qual hook do React é usado para gerenciar estado?",
+                    options: ["useState", "useEffect", "useContext", "useCallback"],
+                    correct: 0,
+                    xp: 100,
+                    coins: 25
+                },
+                {
+                    id: 2,
+                    difficulty: 'Médio',
+                    question: "Qual é a complexidade temporal do Quick Sort no pior caso?",
+                    options: ["O(n log n)", "O(n²)", "O(n)", "O(log n)"],
+                    correct: 1,
+                    xp: 150,
+                    coins: 35
+                }
+            ];
+
+            useEffect(() => {
+                if (timer > 0) {
+                    const interval = setInterval(() => {
+                        setTimer(timer - 1);
+                    }, 1000);
+                    return () => clearInterval(interval);
+                } else {
+                    handleAnswer(null);
+                }
+            }, [timer]);
+
+            const handleAnswer = (answerIndex) => {
+                const quest = quests[currentQuest];
+                const isCorrect = answerIndex === quest.correct;
+                
+                setSelectedAnswer(answerIndex);
+                
+                if (isCorrect) {
+                    SoundManager.playSound('success');
+                    updateUser({ 
+                        xp: user.xp + quest.xp,
+                        coins: user.coins + quest.coins 
+                    });
+                    createXPGain(quest.xp, `🎯 Quest ${quest.difficulty}`);
+                    showToast(`✅ Correto! +${quest.xp} XP, +${quest.coins} moedas`, 'success');
+                } else {
+                    SoundManager.playSound('error');
+                    showToast('❌ Incorreto! Tente novamente.', 'error');
+                }
+
+                setTimeout(() => {
+                    if (currentQuest < quests.length - 1) {
+                        setCurrentQuest(currentQuest + 1);
+                        setSelectedAnswer(null);
+                        setTimer(30);
+                    } else {
+                        showToast('🎉 Todas as quests concluídas!', 'success');
+                        createXPGain(500, '🏆 Quest Master');
+                        SoundManager.playSound('achievement');
+                    }
+                }, 2000);
+            };
+
+            const quest = quests[currentQuest];
+
+            return (
+                <div className="quest-container card">
+                    <h2 className="card-title">🎯 Quest System</h2>
+                    
+                    <div className="quest-progress-bar">
+                        <div className="quest-progress-fill" style={{ width: `${(currentQuest / quests.length) * 100}%` }}></div>
+                    </div>
+
+                    <div className="quest-timer">
+                        <div className="timer-circle">{timer}s</div>
+                    </div>
+
+                    <div className="quest-question">{quest.question}</div>
+
+                    <div className="quest-options">
+                        {quest.options.map((option, idx) => (
+                            <div
+                                key={idx}
+                                className={`quest-option ${
+                                    selectedAnswer === idx 
+                                        ? (idx === quest.correct ? 'correct' : 'incorrect')
+                                        : ''
+                                }`}
+                                onClick={() => !selectedAnswer && handleAnswer(idx)}
+                            >
+                                {option}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Courses Component
+        function CoursesView({ user, updateUser, showToast, createXPGain }) {
+            const courses = [
+                {
+                    id: 1,
+                    title: 'JavaScript Masterclass',
+                    instructor: 'Prof. CodeMaster',
+                    progress: 65,
+                    rating: 4.8,
+                    students: 15420,
+                    icon: '📜',
+                    badge: 'HOT'
+                },
+                {
+                    id: 2,
+                    title: 'React Native Mobile',
+                    instructor: 'Sarah Developer',
+                    progress: 30,
+                    rating: 4.9,
+                    students: 8932,
+                    icon: '📱',
+                    badge: 'NEW'
+                },
+                {
+                    id: 3,
+                    title: 'Python para Machine Learning',
+                    instructor: 'Dr. AI Expert',
+                    progress: 85,
+                    rating: 4.7,
+                    students: 23105,
+                    icon: '🤖',
+                    badge: 'BESTSELLER'
+                },
+                {
+                    id: 4,
+                    title: 'Node.js Backend Pro',
+                    instructor: 'Tech Ninja',
+                    progress: 45,
+                    rating: 4.6,
+                    students: 12876,
+                    icon: '🚀',
+                    badge: 'RECOMMENDED'
+                }
+            ];
+
+            const handleContinue = (course) => {
+                showToast(`📚 Continuando ${course.title}...`, 'info');
+                createXPGain(20, '📚 Study Progress');
+                updateUser({ xp: user.xp + 20 });
+                SoundManager.playSound('notification');
+            };
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">📚 Seus Cursos</h2>
+                    
+                    <div className="courses-grid">
+                        {courses.map(course => (
+                            <div key={course.id} className="course-card">
+                                <div className="course-thumbnail">
+                                    {course.icon}
+                                    <div className="course-badge">{course.badge}</div>
+                                </div>
+                                
+                                <div className="course-info">
+                                    <div className="course-title">{course.title}</div>
+                                    <div className="course-instructor">{course.instructor}</div>
+                                    
+                                    <div className="course-progress">
+                                        <div className="course-progress-fill" style={{ width: `${course.progress}%` }}></div>
+                                    </div>
+                                    
+                                    <div className="course-stats">
+                                        <div className="course-rating">
+                                            ⭐ {course.rating} ({course.students.toLocaleString()})
+                                        </div>
+                                        <div>{course.progress}%</div>
+                                    </div>
+                                    
+                                    <button 
+                                        className="btn btn-secondary"
+                                        onClick={() => handleContinue(course)}
+                                        style={{ marginTop: '16px' }}
+                                    >
+                                        Continuar Curso
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Marketplace Component
+        function MarketplaceView({ user, updateUser, showToast, createXPGain }) {
+            const [activeFilter, setActiveFilter] = useState('all');
+
+            const items = [
+                // NFTs
+                {
+                    id: 1,
+                    category: 'nft',
+                    title: 'Golden Developer Badge',
+                    description: 'Badge NFT lendário para os melhores devs',
+                    price: 500,
+                    currency: 'R$',
+                    rarity: 'legendary',
+                    icon: '🏆'
+                },
+                {
+                    id: 2,
+                    category: 'nft',
+                    title: 'Code Warrior Avatar',
+                    description: 'Avatar NFT épico exclusivo',
+                    price: 250,
+                    currency: 'R$',
+                    rarity: 'epic',
+                    icon: '⚔️'
+                },
+                {
+                    id: 3,
+                    category: 'nft',
+                    title: 'Blockchain Certificate',
+                    description: 'Certificado NFT mítico verificável',
+                    price: 1000,
+                    currency: 'R$',
+                    rarity: 'mythic',
+                    icon: '📜'
+                },
+                // Avatares
+                {
+                    id: 4,
+                    category: 'avatar',
+                    title: 'Cyber Ninja',
+                    description: 'Avatar premium futurista',
+                    price: 100,
+                    currency: '💎',
+                    icon: '🥷'
+                },
+                {
+                    id: 5,
+                    category: 'avatar',
+                    title: 'Space Coder',
+                    description: 'Avatar astronauta programador',
+                    price: 150,
+                    currency: '💎',
+                    icon: '👨‍🚀'
+                },
+                // Power-ups
+                {
+                    id: 6,
+                    category: 'powerup',
+                    title: 'XP Booster Card',
+                    description: '+50% XP por 1 hora',
+                    price: 50,
+                    currency: '🪙',
+                    icon: '⚡'
+                },
+                {
+                    id: 7,
+                    category: 'powerup',
+                    title: 'Skip Challenge',
+                    description: 'Pula um desafio difícil',
+                    price: 30,
+                    currency: '🪙',
+                    icon: '⏭️'
+                },
+                // Emojis
+                {
+                    id: 8,
+                    category: 'emoji',
+                    title: 'Pack Reactions Premium',
+                    description: '50 emojis exclusivos',
+                    price: 19,
+                    currency: 'R$',
+                    icon: '😎'
+                },
+                // Temas
+                {
+                    id: 9,
+                    category: 'theme',
+                    title: 'Dark Neon Theme',
+                    description: 'Tema visual cyberpunk',
+                    price: 25,
+                    currency: 'R$',
+                    icon: '🌃'
+                }
+            ];
+
+            const handlePurchase = (item) => {
+                showToast(`✅ ${item.title} comprado com sucesso!`, 'success');
+                createXPGain(50, '🛍️ Purchase');
+                SoundManager.playSound('coin');
+            };
+
+            const filteredItems = activeFilter === 'all' 
+                ? items 
+                : items.filter(item => item.category === activeFilter);
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">🛍️ Marketplace Premium</h2>
+                    
+                    <div className="marketplace-filters">
+                        {['all', 'nft', 'avatar', 'powerup', 'emoji', 'theme'].map(filter => (
+                            <button
+                                key={filter}
+                                className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
+                                onClick={() => setActiveFilter(filter)}
+                            >
+                                {filter === 'all' ? 'Todos' : filter.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="marketplace-grid">
+                        {filteredItems.map(item => (
+                            <div key={item.id} className={`marketplace-item ${item.rarity || ''}`}>
+                                {item.rarity && (
+                                    <div className={`rarity-badge rarity-${item.rarity}`}>
+                                        {item.rarity.toUpperCase()}
+                                    </div>
+                                )}
+                                
+                                <div className="item-icon">{item.icon}</div>
+                                <div className="item-title">{item.title}</div>
+                                <div className="item-description">{item.description}</div>
+                                
+                                <div className="item-price">
+                                    <div>
+                                        <span className="price-tag">{item.currency} {item.price}</span>
+                                    </div>
+                                </div>
+                                
+                                <button 
+                                    className="btn"
+                                    onClick={() => handlePurchase(item)}
+                                    style={{ marginTop: '16px' }}
+                                >
+                                    Comprar Agora
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Video Call Component
+        function VideoCallView({ user, showToast, createXPGain }) {
+            const [inCall, setInCall] = useState(false);
+
+            const startCall = () => {
+                setInCall(true);
+                showToast('📹 Chamada iniciada!', 'success');
+                createXPGain(30, '📹 Video Call');
+                SoundManager.playSound('call');
+            };
+
+            const endCall = () => {
+                setInCall(false);
+                showToast('📞 Chamada encerrada!', 'info');
+            };
+
+            return (
+                <>
+                    <div className="card">
+                        <h2 className="card-title">📹 Video Calls</h2>
+                        
+                        <div style={{ textAlign: 'center', padding: '40px' }}>
+                            <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎥</div>
+                            <h3 style={{ fontSize: '24px', marginBottom: '16px' }}>
+                                Sistema de Video Conferência HD
+                            </h3>
+                            <p style={{ color: '#94a3b8', marginBottom: '32px' }}>
+                                Conecte-se com sua equipe em chamadas de até 100 participantes
+                            </p>
+                            <button className="btn" onClick={startCall}>
+                                🚀 Iniciar Video Call
+                            </button>
+                        </div>
+                    </div>
+
+                    {inCall && (
+                        <div className="video-call-overlay active">
+                            <div className="video-call-container">
+                                <div className="video-grid">
+                                    {[
+                                        { name: user.username, avatar: user.username[0] },
+                                        { name: 'Sarah Chen', avatar: 'S' },
+                                        { name: 'Alex Dev', avatar: 'A' },
+                                        { name: 'Code Master', avatar: 'C' }
+                                    ].map((participant, idx) => (
+                                        <div key={idx} className="video-participant">
+                                            <div className="participant-avatar">
+                                                {participant.avatar}
+                                            </div>
+                                            <div className="participant-name">{participant.name}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <div className="video-controls">
+                                    <div className="video-control-btn">🎤</div>
+                                    <div className="video-control-btn">📹</div>
+                                    <div className="video-control-btn">📱</div>
+                                    <div className="video-control-btn end" onClick={endCall}>📞</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>
+            );
+        }
+
+        // Code Collaboration Component
+        function CodeCollabView({ user, showToast, createXPGain }) {
+            const [activeFile, setActiveFile] = useState('index.js');
+
+            const files = {
+                'index.js': `// Live Collaboration Session
+import React from 'react';
+
+const App = () => {
+  const [users, setUsers] = useState([]);
+  
+  return (
+    <div>
+      <h1>Match&Learn Collaboration</h1>
+      {/* Real-time code here */}
+    </div>
+  );
+};
+
+export default App;`,
+                'style.css': `/* Collaborative Styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}`,
+                'README.md': `# Project Documentation
+## Team: Silicon Dreamers
+### Active Members: 4`
+            };
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">
+                        💻 Code Collaboration
+                        <div className="live-indicator" style={{ marginLeft: 'auto' }}>
+                            <span className="live-dot"></span>
+                            LIVE
+                        </div>
+                    </h2>
+                    
+                    <div className="code-editor">
+                        <div className="code-editor-header">
+                            <div className="code-tabs">
+                                {Object.keys(files).map(file => (
+                                    <div 
+                                        key={file}
+                                        className={`code-tab ${activeFile === file ? 'active' : ''}`}
+                                        onClick={() => setActiveFile(file)}
+                                    >
+                                        {file}
+                                    </div>
+                                ))}
+                            </div>
+                            
+                            <div className="collaborators">
+                                <div className="collaborator">A</div>
+                                <div className="collaborator">S</div>
+                                <div className="collaborator">{user.username[0]}</div>
+                            </div>
+                        </div>
+                        
+                        <div className="code-area">
+                            <pre>{files[activeFile]}</pre>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
+                        <button 
+                            className="btn btn-secondary"
+                            onClick={() => {
+                                showToast('🚀 Código executado!', 'success');
+                                createXPGain(25, '▶️ Run Code');
+                            }}
+                        >
+                            ▶️ Executar
+                        </button>
+                        <button className="btn btn-secondary">💾 Salvar</button>
+                        <button className="btn btn-secondary">📤 Compartilhar</button>
+                        <button className="btn btn-secondary">🔄 Sincronizar</button>
+                    </div>
+                </div>
+            );
+        }
+
+        // AI Match Component
+        function AIMatchView({ user, showToast, createXPGain }) {
+            const matches = [
+                {
+                    id: 1,
+                    name: 'Tech Innovators Squad',
+                    matchScore: 96,
+                    reason: 'Perfeita compatibilidade em React e Node.js',
+                    skills: ['React', 'Node.js', 'TypeScript', 'AWS'],
+                    project: 'E-commerce SaaS Platform'
+                },
+                {
+                    id: 2,
+                    name: 'AI Research Collective',
+                    matchScore: 89,
+                    reason: 'Interesse mútuo em Machine Learning',
+                    skills: ['Python', 'TensorFlow', 'Pandas'],
+                    project: 'Medical AI Diagnosis Tool'
+                },
+                {
+                    id: 3,
+                    name: 'Mobile Gaming Studio',
+                    matchScore: 84,
+                    reason: 'Experiência em desenvolvimento mobile',
+                    skills: ['Flutter', 'Unity', 'Firebase'],
+                    project: 'Educational Mobile Game'
+                }
+            ];
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">🤖 AI-Powered Matching</h2>
+                    
+                    {matches.map(match => (
+                        <div key={match.id} className="ai-match-card card" style={{ marginBottom: '20px' }}>
+                            <h3>{match.name}</h3>
+                            <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '16px' }}>
+                                {match.reason}
+                            </p>
+                            
+                            <div className="match-score">
+                                <span>Match Score</span>
+                                <div className="match-score-bar">
+                                    <div className="match-score-fill" style={{ width: `${match.matchScore}%` }}></div>
+                                </div>
+                                <span className="match-score-text">{match.matchScore}%</span>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+                                <button 
+                                    className="btn btn-secondary"
+                                    onClick={() => {
+                                        showToast(`📧 Solicitação enviada para ${match.name}!`, 'success');
+                                        createXPGain(40, '🤝 Team Request');
+                                    }}
+                                >
+                                    Aplicar para Equipe
+                                </button>
+                                <button className="btn btn-secondary">Ver Detalhes</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        // Premium Component
+        function PremiumView({ user, updateUser, showToast, createXPGain }) {
+            const plans = [
+                {
+                    name: 'Free',
+                    price: 'R$ 0',
+                    features: [
+                        '✅ 5 Quests por dia',
+                        '✅ Chat básico',
+                        '✅ 1 Equipe',
+                        '❌ Video calls',
+                        '❌ Code collaboration',
+                        '❌ AI Matching'
+                    ]
+                },
+                {
+                    name: 'Pro',
+                    price: 'R$ 29',
+                    featured: true,
+                    features: [
+                        '✅ Quests ilimitadas',
+                        '✅ Chat avançado',
+                        '✅ 5 Equipes',
+                        '✅ Video calls HD',
+                        '✅ Code collaboration',
+                        '✅ AI Matching básico'
+                    ]
+                },
+                {
+                    name: 'Enterprise',
+                    price: 'R$ 99',
+                    features: [
+                        '✅ Tudo do Pro',
+                        '✅ Equipes ilimitadas',
+                        '✅ Video calls ilimitado',
+                        '✅ AI Matching avançado',
+                        '✅ Suporte prioritário',
+                        '✅ API Access'
+                    ]
+                }
+            ];
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">💎 Planos Premium</h2>
+                    
+                    <div className="pricing-grid">
+                        {plans.map(plan => (
+                            <div key={plan.name} className={`pricing-card ${plan.featured ? 'featured' : ''}`}>
+                                <div className="pricing-title">{plan.name}</div>
+                                <div className="pricing-price">{plan.price}<span style={{ fontSize: '16px' }}>/mês</span></div>
+                                
+                                <ul className="pricing-features">
+                                    {plan.features.map((feature, idx) => (
+                                        <li key={idx}>{feature}</li>
+                                    ))}
+                                </ul>
+                                
+                                <button 
+                                    className={plan.featured ? 'btn btn-premium' : 'btn btn-secondary'}
+                                    onClick={() => {
+                                        showToast(`🎉 Plano ${plan.name} ativado!`, 'success');
+                                        updateUser({ premium: true, plan: plan.name });
+                                        createXPGain(100, '💎 Premium Upgrade');
+                                    }}
+                                >
+                                    {plan.name === 'Free' ? 'Plano Atual' : 'Assinar Agora'}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // Challenges Component
+        function ChallengesView({ user, updateUser, showToast, createXPGain }) {
+            const [timeLeft, setTimeLeft] = useState({
+                days: 2,
+                hours: 14,
+                minutes: 32,
+                seconds: 15
+            });
+
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        let { days, hours, minutes, seconds } = prev;
+                        
+                        if (seconds > 0) seconds--;
+                        else {
+                            seconds = 59;
+                            if (minutes > 0) minutes--;
+                            else {
+                                minutes = 59;
+                                if (hours > 0) hours--;
+                                else {
+                                    hours = 23;
+                                    if (days > 0) days--;
+                                }
+                            }
+                        }
+                        
+                        return { days, hours, minutes, seconds };
+                    });
+                }, 1000);
+
+                return () => clearInterval(timer);
+            }, []);
+
+            const challenges = [
+                {
+                    id: 1,
+                    title: 'Hackathon Google Cloud',
+                    sponsor: 'Google',
+                    prize: 'R$ 50.000',
+                    participants: 1234,
+                    difficulty: 'Expert',
+                    description: 'Desenvolva uma solução inovadora usando Google Cloud Platform'
+                },
+                {
+                    id: 2,
+                    title: 'AWS AI Challenge',
+                    sponsor: 'Amazon',
+                    prize: 'R$ 30.000',
+                    participants: 890,
+                    difficulty: 'Avançado',
+                    description: 'Crie um modelo de ML usando AWS SageMaker'
+                },
+                {
+                    id: 3,
+                    title: 'Meta React Competition',
+                    sponsor: 'Meta',
+                    prize: 'R$ 25.000',
+                    participants: 567,
+                    difficulty: 'Intermediário',
+                    description: 'Construa um app React inovador'
+                }
+            ];
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">🏆 Desafios Patrocinados</h2>
+                    
+                    {challenges.map(challenge => (
+                        <div key={challenge.id} style={{
+                            background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1))',
+                            border: '2px solid rgba(245, 158, 11, 0.3)',
+                            borderRadius: '20px',
+                            padding: '24px',
+                            marginBottom: '20px'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+                                <div>
+                                    <h3 style={{ fontSize: '20px', marginBottom: '8px' }}>{challenge.title}</h3>
+                                    <div style={{ fontSize: '14px', color: '#94a3b8' }}>
+                                        Patrocinado por {challenge.sponsor}
+                                    </div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: '28px', fontWeight: '800', color: '#f59e0b' }}>
+                                        {challenge.prize}
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                                        {challenge.participants} participantes
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <p style={{ marginBottom: '16px', color: '#cbd5e1' }}>
+                                {challenge.description}
+                            </p>
+
+                            <div style={{
+                                display: 'flex',
+                                gap: '16px',
+                                padding: '16px',
+                                background: 'rgba(0, 0, 0, 0.3)',
+                                borderRadius: '12px',
+                                marginBottom: '16px'
+                            }}>
+                                {Object.entries(timeLeft).map(([unit, value]) => (
+                                    <div key={unit} style={{ textAlign: 'center' }}>
+                                        <div style={{ fontSize: '24px', fontWeight: '800' }}>
+                                            {String(value).padStart(2, '0')}
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                            {unit === 'days' ? 'Dias' : 
+                                             unit === 'hours' ? 'Horas' :
+                                             unit === 'minutes' ? 'Min' : 'Seg'}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button 
+                                className="btn"
+                                onClick={() => {
+                                    showToast(`🏆 Inscrito no ${challenge.title}!`, 'success');
+                                    updateUser({ challenges: (user.challenges || 0) + 1 });
+                                    createXPGain(100, '🏆 Challenge Registration');
+                                }}
+                            >
+                                Participar do Desafio
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        // Main Dashboard Component
+        function Dashboard({ user, setUser }) {
+            const [activeTab, setActiveTab] = useState('feed');
+            const [toast, setToast] = useState(null);
+            const [xpGains, setXpGains] = useState([]);
+            const [wsConnected, setWsConnected] = useState(false);
+            const wsRef = useRef(null);
+
+            useEffect(() => {
+                // Initialize WebSocket
+                wsRef.current = new WebSocketManager((message) => {
+                    console.log('📡 WebSocket message:', message);
+                    
+                    // Handle real-time notifications
+                    switch(message.type) {
+                        case 'team_invite':
+                            showToast(`📧 ${message.data.from} convidou você para ${message.data.team}!`, 'info');
+                            break;
+                        case 'achievement_unlock':
+                            showToast(`🏆 ${message.data.user} desbloqueou: ${message.data.achievement}!`, 'success');
+                            break;
+                        case 'user_joined':
+                            showToast(`👋 ${message.data.username} (Nível ${message.data.level}) entrou!`, 'info');
+                            break;
+                        case 'challenge_start':
+                            showToast(`🚀 ${message.data.challenge} iniciou com ${message.data.participants} participantes!`, 'info');
+                            break;
+                        default:
+                            break;
+                    }
+                });
+
+                setTimeout(() => setWsConnected(true), 1000);
+
+                return () => {
+                    if (wsRef.current) {
+                        wsRef.current.disconnect();
+                    }
+                };
+            }, []);
+
+            const updateUser = (updates) => {
+                const newUser = { ...user, ...updates };
+                
+                // Check for level up
+                if (updates.xp) {
+                    const newLevel = Math.floor(newUser.xp / 1000) + 1;
+                    if (newLevel > (user.level || 1)) {
+                        newUser.level = newLevel;
+                        showToast(`🎉 LEVEL UP! Você agora é nível ${newLevel}!`, 'success');
+                        createXPGain(500, '🎉 Level Up Bonus');
+                        SoundManager.playSound('achievement');
+                    }
+                }
+                
+                setUser(newUser);
+            };
+
+            const showToast = (message, type = 'info') => {
+                setToast({ message, type });
+                SoundManager.playSound('notification');
+                setTimeout(() => setToast(null), 4000);
+            };
+
+            const createXPGain = (amount, reason = 'XP Gain') => {
+                const xpGain = {
+                    id: Date.now(),
+                    amount,
+                    reason,
+                    x: Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1,
+                    y: Math.random() * window.innerHeight * 0.3 + window.innerHeight * 0.3
+                };
+                
+                setXpGains(prev => [...prev, xpGain]);
+                
+                setTimeout(() => {
+                    setXpGains(prev => prev.filter(gain => gain.id !== xpGain.id));
+                }, 2500);
+                
+                updateUser({ xp: (user.xp || 0) + amount });
+            };
+
+            const tabs = [
+                { id: 'feed', label: 'Feed', icon: '📱', badge: 0 },
+                { id: 'social', label: 'Social', icon: '📸', badge: 3 },
+                { id: 'quest', label: 'Quest', icon: '🎯', badge: 0 },
+                { id: 'courses', label: 'Cursos', icon: '📚', badge: 0 },
+                { id: 'marketplace', label: 'Marketplace', icon: '🛍️', badge: 0 },
+                { id: 'video', label: 'Video Call', icon: '📹', badge: 0 },
+                { id: 'code', label: 'Code Collab', icon: '💻', badge: 0 },
+                { id: 'ai', label: 'AI Match', icon: '🤖', badge: 0 },
+                { id: 'premium', label: 'Premium', icon: '💎', badge: 0 },
+                { id: 'challenges', label: 'Desafios', icon: '🏆', badge: 4 }
+            ];
+
+            return (
+                <div className="dashboard">
+                    {/* WebSocket Status Indicator */}
+                    {wsConnected && (
+                        <div style={{
+                            position: 'fixed',
+                            top: '80px',
+                            right: '20px',
+                            padding: '8px 16px',
+                            background: 'rgba(16, 185, 129, 0.1)',
+                            border: '1px solid rgba(16, 185, 129, 0.3)',
+                            borderRadius: '20px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '12px',
+                            zIndex: 99,
+                            backdropFilter: 'blur(10px)'
+                        }}>
+                            <span style={{
+                                width: '8px',
+                                height: '8px',
+                                background: '#10b981',
+                                borderRadius: '50%',
+                                animation: 'pulse 2s infinite'
+                            }}></span>
+                            <span style={{ color: '#10b981', fontWeight: '600' }}>Real-time Connected</span>
+                        </div>
+                    )}
+
+                    <header className="header">
+                        <div className="header-content">
+                            <div className="brand">
+                                <div className="brand-icon">🚀</div>
+                                <span className="brand-name">Match&Learn Pro</span>
+                                <div style={{
+                                    padding: '4px 8px',
+                                    background: 'var(--premium-gradient)',
+                                    color: '#0f172a',
+                                    borderRadius: '8px',
+                                    fontSize: '10px',
+                                    fontWeight: '800',
+                                    marginLeft: '12px'
+                                }}>
+                                    ULTIMATE
+                                </div>
+                            </div>
+                            
+                            <div className="user-section">
+                                <div className="stats-bar">
+                                    <div className="stat-item">
+                                        <span className="stat-label">Level</span>
+                                        <span className="stat-value">{user.level || 1}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">XP</span>
+                                        <span className="stat-value">{(user.xp || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Moedas</span>
+                                        <span className="stat-value">{user.coins || 500}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Gemas</span>
+                                        <span className="stat-value">{user.gems || 50}</span>
+                                    </div>
+                                    <div className="stat-item">
+                                        <span className="stat-label">Streak</span>
+                                        <span className="stat-value">7🔥</span>
+                                    </div>
+                                </div>
+                                
+                                <div className={`user-avatar ${user.premium ? 'premium-glow' : ''}`}>
+                                    {user.username[0].toUpperCase()}
+                                    {user.premium && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            bottom: '-2px',
+                                            right: '-2px',
+                                            background: '#ffd700',
+                                            borderRadius: '50%',
+                                            width: '16px',
+                                            height: '16px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '10px'
+                                        }}>
+                                            👑
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <button 
+                                    className="btn btn-secondary" 
+                                    style={{ width: 'auto', padding: '12px 24px' }}
+                                    onClick={() => {
+                                        showToast('👋 Até logo! Volte sempre!', 'info');
+                                        setTimeout(() => setUser(null), 1000);
+                                    }}
+                                >
+                                    🚪 Sair
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <div className="main-container">
+                        <div className="nav-tabs">
+                            {tabs.map(tab => (
+                                <button 
+                                    key={tab.id}
+                                    className={`tab ${activeTab === tab.id ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setActiveTab(tab.id);
+                                        SoundManager.playSound('notification');
+                                    }}
+                                >
+                                    <span>{tab.icon}</span> {tab.label}
+                                    {tab.badge > 0 && <span className="notification-badge">{tab.badge}</span>}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="content-area">
+                            <div className="main-panel">
+                                {activeTab === 'feed' && (
+                                    <FeedView 
+                                        user={user} 
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'social' && (
+                                    <SocialView 
+                                        user={user} 
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'quest' && (
+                                    <QuestView 
+                                        user={user} 
+                                        updateUser={updateUser}
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'courses' && (
+                                    <CoursesView 
+                                        user={user} 
+                                        updateUser={updateUser}
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'marketplace' && (
+                                    <MarketplaceView 
+                                        user={user} 
+                                        updateUser={updateUser}
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'video' && (
+                                    <VideoCallView 
+                                        user={user} 
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'code' && (
+                                    <CodeCollabView 
+                                        user={user} 
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'ai' && (
+                                    <AIMatchView 
+                                        user={user} 
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'premium' && (
+                                    <PremiumView 
+                                        user={user} 
+                                        updateUser={updateUser}
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                                {activeTab === 'challenges' && (
+                                    <ChallengesView 
+                                        user={user} 
+                                        updateUser={updateUser}
+                                        showToast={showToast}
+                                        createXPGain={createXPGain}
+                                    />
+                                )}
+                            </div>
+
+                            <div className="side-panel">
+                                {/* Live Activity Feed */}
+                                <div className="card">
+                                    <h3 className="card-title">
+                                        🔴 Atividade ao Vivo
+                                    </h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        <div style={{ 
+                                            padding: '12px',
+                                            background: 'rgba(239, 68, 68, 0.1)',
+                                            borderRadius: '12px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '12px'
+                                        }}>
+                                            <span className="live-dot"></span>
+                                            <div>
+                                                <div style={{ fontSize: '13px', fontWeight: '600' }}>
+                                                    Sarah está programando
+                                                </div>
+                                                <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                                                    JavaScript • React Hooks
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style={{ 
+                                            padding: '12px',
+                                            background: 'rgba(16, 185, 129, 0.1)',
+                                            borderRadius: '12px'
+                                        }}>
+                                            <div style={{ fontSize: '13px', fontWeight: '600' }}>
+                                                Team Alpha em video call
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                                                4 membros conectados
+                                            </div>
+                                        </div>
+                                        
+                                        <div style={{ 
+                                            padding: '12px',
+                                            background: 'rgba(99, 102, 241, 0.1)',
+                                            borderRadius: '12px'
+                                        }}>
+                                            <div style={{ fontSize: '13px', fontWeight: '600' }}>
+                                                1.234 no Google Hackathon
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                                                48h restantes • R$ 50k prêmio
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Quick Actions */}
+                                <div className="card">
+                                    <h3 className="card-title">
+                                        ⚡ Quick Actions
+                                    </h3>
+                                    <div style={{ display: 'grid', gap: '12px' }}>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                showToast('🤖 Criando equipe com IA...', 'info');
+                                                createXPGain(25, '🤖 AI Team Builder');
+                                            }}
+                                        >
+                                            🤖 Criar Equipe com IA
+                                        </button>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                showToast('👥 Iniciando pair programming...', 'info');
+                                                createXPGain(30, '👥 Pair Programming');
+                                            }}
+                                        >
+                                            👥 Pair Programming
+                                        </button>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                showToast('📊 Abrindo analytics...', 'info');
+                                                createXPGain(15, '📊 Analytics View');
+                                            }}
+                                        >
+                                            📊 Ver Analytics
+                                        </button>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={() => {
+                                                showToast('🎓 Exportando certificados...', 'success');
+                                                createXPGain(50, '🎓 Certificate Export');
+                                            }}
+                                        >
+                                            🎓 Certificados
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Your Teams */}
+                                <div className="card">
+                                    <h3 className="card-title">
+                                        👥 Suas Equipes
+                                    </h3>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                        <div style={{ 
+                                            padding: '16px', 
+                                            background: 'rgba(99, 102, 241, 0.1)', 
+                                            borderRadius: '12px',
+                                            cursor: 'pointer'
+                                        }}>
+                                            <div style={{ fontWeight: '600', marginBottom: '6px' }}>
+                                                🚀 Silicon Dreamers
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>
+                                                5 membros • Projeto ativo
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: '#10b981' }}>
+                                                ● 3 online agora
+                                            </div>
+                                        </div>
+                                        
+                                        <div style={{ 
+                                            padding: '16px', 
+                                            background: 'rgba(16, 185, 129, 0.1)', 
+                                            borderRadius: '12px',
+                                            cursor: 'pointer'
+                                        }}>
+                                            <div style={{ fontWeight: '600', marginBottom: '6px' }}>
+                                                ⚔️ Code Warriors
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>
+                                                3 membros • Competição
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: '#f59e0b' }}>
+                                                🏆 Hackathon ativo
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Toast Notifications */}
+                    {toast && <Toast {...toast} onClose={() => setToast(null)} />}
+
+                    {/* XP Gain Animations */}
+                    {xpGains.map(gain => (
+                        <XPGain 
+                            key={gain.id}
+                            x={gain.x}
+                            y={gain.y}
+                            amount={gain.amount}
+                            reason={gain.reason}
+                        />
+                    ))}
+                </div>
+            );
+        }
+
+        // Main App Component
+        function App() {
+            const [user, setUser] = useState(null);
+
+            const handleLogin = (loginData) => {
+                setUser({
+                    ...loginData,
+                    level: 1,
+                    xp: 0,
+                    coins: 500,
+                    gems: 50,
+                    teams: 2,
+                    challenges: 0,
+                    premium: false,
+                    verified: false
+                });
+            };
+
+            return user ? (
+                <Dashboard user={user} setUser={setUser} />
+            ) : (
+                <LoginScreen onLogin={handleLogin} />
+            );
+        }
+
+        // Initialize and Render
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);

@@ -6,7 +6,8 @@ import { authOptions } from '@/lib/auth';
 
 export async function getFeedContent() {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id;
+    if (!userId) {
         return { success: false, error: 'Unauthorized' };
     }
 
@@ -16,7 +17,7 @@ export async function getFeedContent() {
             where: {
                 progress: {
                     none: {
-                        userId: session.user.id,
+                        userId: userId,
                         completed: true,
                     },
                 },

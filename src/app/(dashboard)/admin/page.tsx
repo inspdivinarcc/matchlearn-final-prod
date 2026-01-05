@@ -74,7 +74,7 @@ export default async function AdminPage() {
                         <TableBody>
                             {users.map((user) => (
                                 <TableRow key={user.id}>
-                                    <TableCell className="font-medium">{user.name}</TableCell>
+                                    <TableCell className="font-medium">{user.username || 'User'}</TableCell>
                                     <TableCell>{user.email}</TableCell>
                                     <TableCell>
                                         <Badge variant="outline">Lvl {user.level}</Badge>

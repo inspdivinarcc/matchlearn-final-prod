@@ -9,6 +9,9 @@ const SHOP_ITEMS = [
     { id: 'xp_boost_1h', name: 'XP Boost (1h)', price: 100, type: 'consumable', description: 'Dobra seu XP por 1 hora.' },
     { id: 'skin_neon', name: 'Skin Neon', price: 500, type: 'skin', description: 'Visual exclusivo para seu avatar.' },
     { id: 'loot_box_common', name: 'Caixa Comum', price: 50, type: 'lootbox', description: 'Contém itens aleatórios.' },
+    { id: 'mentorship_pass', name: 'Passe de Mentoria', price: 300, type: 'service', description: '1 sessão de 30min com Mentor.' },
+    { id: 'badge_early', name: 'Badge Early Adopter', price: 1000, type: 'badge', description: 'Mostre que você chegou cedo.' },
+    { id: 'frame_gold', name: 'Moldura Dourada', price: 750, type: 'cosmetic', description: 'Destaque sua foto de perfil.' },
 ];
 
 export async function getShopItems() {

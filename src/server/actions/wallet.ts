@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { createWalletForUser } from '@/lib/wallet-utils';
 
 export async function createInvisibleWallet() {
     const session = await getServerSession(authOptions);
@@ -12,41 +12,7 @@ export async function createInvisibleWallet() {
     }
 
     const userId = (session.user as any).id;
-
-    try {
-        // Check if wallet already exists
-        const existingWallet = await prisma.wallet.findUnique({
-            where: { userId },
-        });
-
-        if (existingWallet) {
-            return { success: true, address: existingWallet.address };
-        }
-
-        // Generate new random private key and account
-        // NOTE: In a real production app, we would encrypt this private key 
-        // or use a KMS. For this prototype, we are generating it to get the address
-        // but NOT storing the private key in the DB (as per schema). 
-        // This means the user cannot sign transactions later unless we store it.
-        // For "Invisible Web3" where server mints TO user, address is enough.
-
-        const privateKey = generatePrivateKey();
-        const account = privateKeyToAccount(privateKey);
-        const address = account.address;
-
-        // Store only the address in the database
-        const wallet = await prisma.wallet.create({
-            data: {
-                userId,
-                address,
-            },
-        });
-
-        return { success: true, address: wallet.address };
-    } catch (error) {
-        console.error('Error creating invisible wallet:', error);
-        return { success: false, error: 'Failed to create wallet.' };
-    }
+    return await createWalletForUser(userId);
 }
 
 export async function getUserWallet() {
@@ -69,5 +35,52 @@ export async function getUserWallet() {
         return { success: true, address: wallet.address };
     } catch (error) {
         return { success: false, error: 'Failed to fetch wallet' };
+    }
+}
+
+export async function getWalletBalance() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).id) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    const userId = (session.user as any).id;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { coins: true } // Gems removed as not in User model
+        });
+
+        // Calculate earnings from transactions if needed, or just return user balance
+        // For now, let's return user balance + mock earnings
+        return {
+            success: true,
+            coins: user?.coins || 0,
+            gems: 50, // Mock for now if not in DB
+            earnings: 1250.00 // Mock USD earnings
+        };
+    } catch (error) {
+        return { success: false, error: 'Failed to fetch balance' };
+    }
+}
+
+export async function getTransactions() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).id) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    const userId = (session.user as any).id;
+
+    try {
+        const transactions = await prisma.transaction.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return { success: true, transactions };
+    } catch (error) {
+        return { success: false, error: 'Failed to fetch transactions' };
     }
 }

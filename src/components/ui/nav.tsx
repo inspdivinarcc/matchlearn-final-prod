@@ -3,18 +3,24 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Home, Swords, Backpack, LogOut, ShoppingBag } from 'lucide-react';
+import { Home, Swords, Backpack, LogOut, ShoppingBag, MessageCircle, Users, Wallet, Zap, Brain } from 'lucide-react';
 import { Button } from './button';
 import { signOut } from 'next-auth/react';
+import { LanguageSwitcher } from '@/components/language-switcher';
 
 export function Navigation() {
     const pathname = usePathname();
 
     const links = [
         { href: '/home', label: 'Home', icon: Home },
+        { href: '/social', label: 'Social', icon: MessageCircle },
+        { href: '/match', label: 'Match', icon: Users },
+        { href: '/match/neural', label: 'Neural Match', icon: Brain },
+        { href: '/flash-solve', label: 'Flash Solve', icon: Zap },
+        { href: '/wallet', label: 'Carteira', icon: Wallet },
         { href: '/arena', label: 'Arena', icon: Swords },
-        { href: '/marketplace', label: 'Marketplace', icon: ShoppingBag },
-        { href: '/inventory', label: 'Inventário', icon: Backpack },
+        { href: '/marketplace', label: 'Shop', icon: ShoppingBag },
+        { href: '/inventory', label: 'Items', icon: Backpack },
     ];
 
     return (
@@ -40,10 +46,13 @@ export function Navigation() {
                         ))}
                     </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => signOut()}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sair
-                </Button>
+                <div className="flex items-center gap-2">
+                    <LanguageSwitcher />
+                    <Button variant="ghost" size="sm" onClick={() => signOut()}>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sair
+                    </Button>
+                </div>
             </div>
         </nav>
     );

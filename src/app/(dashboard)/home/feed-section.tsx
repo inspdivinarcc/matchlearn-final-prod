@@ -1,12 +1,32 @@
+'use client';
+
 import { getFeedContent } from '@/server/actions/feed';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Swords, Brain, PlayCircle } from 'lucide-react';
+import { BookOpen, Swords, Brain, PlayCircle, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-export async function FeedSection() {
-    const feedData = await getFeedContent();
-    const feedItems = feedData.success ? feedData.data : [];
+export function FeedSection() {
+    const [feedItems, setFeedItems] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getFeedContent().then((data) => {
+            if (data.success && data.data) {
+                setFeedItems(data.data);
+            }
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center py-10">
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            </div>
+        );
+    }
 
     if (!feedItems || feedItems.length === 0) {
         return (

@@ -1,21 +1,30 @@
 # Guia de Deploy - Match&Learn
 
-Este guia cobre como implantar a aplicação Match&Learn em produção usando Vercel e um banco de dados PostgreSQL (ex: Supabase, Neon ou Vercel Postgres).
+## Arquitetura de Deploy (Vercel + Supabase)
+
+Para o **Match&Learn**, utilizamos uma arquitetura moderna e robusta:
+
+1.  **Frontend (O Site)**: Hospedado na **Vercel**. Ela roda o Next.js, as páginas e as animações.
+2.  **Backend (O Banco de Dados)**: Hospedado no **Supabase**. Ele guarda os usuários, saldos, gigs e perguntas.
+
+> **Nota**: O Supabase não hospeda o site Next.js sozinho. Eles trabalham juntos: A Vercel mostra o site e o site puxa os dados do Supabase.
 
 ## Pré-requisitos
 
-1.  **Repositório GitHub**: Certifique-se de que seu código está no GitHub.
-2.  **Conta Vercel**: Crie uma conta em [vercel.com](https://vercel.com).
-3.  **Banco de Dados**: Uma URL de conexão PostgreSQL.
+1.  **Repositório GitHub**: Certifique-se de que seu código está no GitHub (Já feito!).
+2.  **Conta Vercel**: Para colocar o site no ar.
+3.  **Conta Supabase**: Para criar o banco de dados.
 
-## Passo 1: Configuração do Banco de Dados
+## Passo 1: Configuração do Supabase (Banco de Dados)
 
-1.  Crie um novo banco Postgres (recomendado: Supabase ou Neon Tech).
-2.  Obtenha a string de conexão `DATABASE_URL`.
-3.  Rodar migrações (na sua máquina local apontando para prod ou no build da Vercel):
-    ```bash
-    npx prisma migrate deploy
-    ```
+1.  Crie uma conta em [supabase.com](https://supabase.com).
+2.  Clique em **"New Project"**.
+3.  Defina uma senha forte para o banco (guarde-a!).
+4.  Vá em **Project Settings > Database**.
+5.  Copie a **Connection String (URI)**. Selecione "Transaction Mode" (porta 6543) para melhor compatibilidade.
+    -   Exemplo: `postgres://postgres.[ref]:[password]@aws-0-us-east-1.pooler.supabase.com:6543/postgres`
+    -   Substitua `[password]` pela senha que você criou.
+6.  Essa será sua `DATABASE_URL`.
 
 ## Passo 2: Variáveis de Ambiente
 

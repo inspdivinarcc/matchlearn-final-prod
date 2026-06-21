@@ -7,10 +7,6 @@
         {
             "path": "/api/cron/retry-mints",
             "schedule": "0 1 * * *"
-        },
-        {
-            "path": "/api/cron/generate-questions",
-            "schedule": "0 2 * * 0"
         }
     ]
 }

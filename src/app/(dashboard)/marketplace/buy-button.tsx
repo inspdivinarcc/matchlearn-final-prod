@@ -5,6 +5,7 @@ import { buyItem } from '@/server/actions/shop';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 
 export function BuyButton({ itemId, price, userCoins }: { itemId: string, price: number, userCoins: number }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +19,11 @@ export function BuyButton({ itemId, price, userCoins }: { itemId: string, price:
         try {
             const result = await buyItem(itemId);
             if (result.success) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
                 toast.success(result.message);
             } else {
                 toast.error(result.error);

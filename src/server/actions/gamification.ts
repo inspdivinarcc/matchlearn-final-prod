@@ -7,6 +7,8 @@ import { revalidatePath } from 'next/cache';
 
 import { mintUserBadge, getBackendWalletClient } from '@/lib/web3';
 import { getUserWallet } from './wallet';
+import { AppError, logErrorToSentry, formatErrorForUser } from '@/lib/errors';
+import { trackEvent } from '@/lib/analytics';
 
 export async function addXpAndCoins(userId: string, xpAmount: number, coinsAmount: number) {
     try {
@@ -25,6 +27,8 @@ export async function addXpAndCoins(userId: string, xpAmount: number, coinsAmoun
                 where: { id: userId },
                 data: { level: newLevel },
             });
+
+            trackEvent('level_up', { userId, newLevel });
 
             // Trigger Badge minting for level up
             try {
@@ -58,10 +62,21 @@ export async function addXpAndCoins(userId: string, xpAmount: number, coinsAmoun
                     });
 
                     console.log(`Minted Level ${newLevel} Badge: ${txHash}`);
+                    trackEvent('nft_minted', { badgeType: `level_${newLevel}_badge`, success: true });
                 }
             } catch (mintError) {
                 console.error('Failed to mint badge on level up:', mintError);
-                // Don't fail the whole request if minting fails
+                trackEvent('nft_minted', { badgeType: `level_${newLevel}_badge`, success: false });
+
+                // Save to PendingMint instead of failing silently
+                await prisma.pendingMint.create({
+                    data: {
+                        userId,
+                        badgeType: `level_${newLevel}_badge`, // Using standard format
+                        error: mintError instanceof Error ? mintError.message : String(mintError),
+                    }
+                });
+                // Don't fail the whole request
             }
         }
 
@@ -69,7 +84,7 @@ export async function addXpAndCoins(userId: string, xpAmount: number, coinsAmoun
         revalidatePath('/inventory');
         return { success: true, newXp: user.xp, newCoins: user.coins, newLevel };
     } catch (error) {
-        console.error('Error adding XP/Coins:', error);
-        return { success: false, error: 'Failed to update gamification stats.' };
+        logErrorToSentry(error, { context: 'addXpAndCoins', userId, xpAmount, coinsAmount });
+        return { success: false, error: formatErrorForUser(new AppError('INTERNAL_ERROR')) };
     }
 }

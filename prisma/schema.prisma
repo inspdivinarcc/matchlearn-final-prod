@@ -3,20 +3,22 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
+  name             String?   
   username         String?
-  email            String?  @unique
+  email            String?   @unique
+  emailVerified    DateTime? // <-- Campo essencial adicionado para o NextAuth
   image            String?
-  coins            Int      @default(450)
-  isPremium        Boolean  @default(false)
+  coins            Int       @default(450)
+  isPremium        Boolean   @default(false)
   premiumEndsAt    DateTime?
   role             String?
-  stripeCustomerId String?  @unique
+  stripeCustomerId String?   @unique
 
   accounts      Account[]
   sessions      Session[]
@@ -56,6 +58,8 @@ model User {
   vakAuditory   Int      @default(0)
   vakKinesthetic Int     @default(0)
   learningStyle String?  // 'VISUAL', 'AUDITORY', 'KINESTHETIC'
+
+  pendingMints  PendingMint[]
 }
 
 model Account {
@@ -126,8 +130,6 @@ model Wallet {
   address   String  @unique
 }
 
-// Hero's Journey & Gamification Models
-
 model Content {
   id          String   @id @default(cuid())
   title       String
@@ -153,17 +155,18 @@ model UserProgress {
 }
 
 model Battle {
-  id        String   @id @default(cuid())
-  player1Id String
-  player1   User     @relation("Player1", fields: [player1Id], references: [id])
-  player2Id String?
-  player2   User?    @relation("Player2", fields: [player2Id], references: [id])
-  winnerId  String?
-  status    String   // 'pending', 'active', 'completed'
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  player1Id       String
+  player1         User     @relation("Player1", fields: [player1Id], references: [id])
+  player2Id       String?
+  player2         User?    @relation("Player2", fields: [player2Id], references: [id])
+  winnerId        String?
+  status          String   // 'pending', 'active', 'completed', 'expired'
+  questionId      String?  // ID from question bank
+  correctAnswerId String?  // Server-only: correct option ID
+  answerId        String?  // What the user actually chose
+  createdAt       DateTime @default(now())
 }
-
-// Social Features
 
 model Post {
   id        String    @id @default(cuid())
@@ -193,7 +196,7 @@ model Comment {
   postId    String
   post      Post     @relation(fields: [postId], references: [id])
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User      @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
 }
 
@@ -202,12 +205,10 @@ model Story {
   imageUrl  String?
   content   String?
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User      @relation(fields: [authorId], references: [id])
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
-
-// Team Match Features
 
 model Project {
   id          String   @id @default(cuid())
@@ -233,17 +234,15 @@ model TeamMember {
   @@unique([projectId, userId])
 }
 
-// Wallet & Earnings
-
 model Transaction {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  amount    Float
-  currency  String   // 'COIN', 'GEM', 'USD'
-  type      String   // 'EARN', 'SPEND', 'WITHDRAW'
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  amount      Float
+  currency    String   // 'COIN', 'GEM', 'USD'
+  type        String   // 'EARN', 'SPEND', 'WITHDRAW'
   description String
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 }
 
 model MentorshipSession {
@@ -258,20 +257,18 @@ model MentorshipSession {
   createdAt DateTime @default(now())
 }
 
-// Trinity Gig Board
-
 model Gig {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  reward      Int
-  difficulty  String   // 'Easy', 'Medium', 'Hard'
-  type        String   // 'Security', 'Frontend', 'Backend', etc.
+  id           String   @id @default(cuid())
+  title        String
+  description  String
+  reward       Int
+  difficulty   String   // 'Easy', 'Medium', 'Hard'
+  type         String   // 'Security', 'Frontend', 'Backend', etc.
   timeEstimate String
-  status      String   @default("OPEN") // 'OPEN', 'CLOSED'
+  status       String   @default("OPEN") // 'OPEN', 'CLOSED'
   
   applications GigApplication[]
-  createdAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
 }
 
 model GigApplication {
@@ -284,4 +281,30 @@ model GigApplication {
   createdAt DateTime @default(now())
 
   @@unique([gigId, userId])
+}
+
+model PendingMint {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  badgeType String   // e.g. 'level_10_badge'
+  attempts  Int      @default(0)
+  status    String   @default("pending") // 'pending', 'completed', 'failed'
+  error     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuestionBank {
+  id                 String   @id @default(cuid())
+  question           String
+  options            String   // JSON array string "['op1', 'op2']"
+  correctAnswerIndex Int
+  subject            String
+  difficulty         String   // 'Easy', 'Medium', 'Hard'
+  timesUsed          Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([subject, difficulty])
 }

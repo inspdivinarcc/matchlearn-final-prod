@@ -1,0 +1,7 @@
+"scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint",
+  "setup": "powershell -ExecutionPolicy Bypass -File ./setup-dev.ps1"
+}

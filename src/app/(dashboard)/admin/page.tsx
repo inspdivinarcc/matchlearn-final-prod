@@ -9,9 +9,14 @@ import { Badge } from '@/components/ui/badge';
 export default async function AdminPage() {
     const session = await getServerSession(authOptions);
 
-    // Simple protection: Check if user exists (in real app, check role/email)
+    // SEC-04: RBAC — Only allow users with role === 'ADMIN'
     if (!session?.user) {
         redirect('/api/auth/signin');
+    }
+
+    const role = (session.user as any).role;
+    if (role !== 'ADMIN') {
+        redirect('/');
     }
 
     const users = await prisma.user.findMany({

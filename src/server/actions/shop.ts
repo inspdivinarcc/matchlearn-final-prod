@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
+import { trackEvent } from '@/lib/analytics';
 
 const SHOP_ITEMS = [
     { id: 'xp_boost_1h', name: 'XP Boost (1h)', price: 100, type: 'consumable', description: 'Dobra seu XP por 1 hora.' },
@@ -63,6 +64,8 @@ export async function buyItem(itemId: string) {
         revalidatePath('/marketplace');
         revalidatePath('/inventory');
         revalidatePath('/home');
+
+        trackEvent('item_purchased', { itemId: item.id, itemName: item.name, price: item.price });
 
         return { success: true, message: `Bought ${item.name}!` };
     } catch (error) {

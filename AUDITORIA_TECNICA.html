@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoria Técnica — Match&Learn App</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #222535; --border: #2e3147;
+    --text: #e2e4ef; --muted: #8b8fa8; --red: #ff5c5c; --red-bg: rgba(255,92,92,0.1);
+    --orange: #ff9f43; --orange-bg: rgba(255,159,67,0.1); --yellow: #ffd32a;
+    --yellow-bg: rgba(255,211,42,0.1); --green: #0be881; --green-bg: rgba(11,232,129,0.1);
+    --blue: #48dbfb; --blue-bg: rgba(72,219,251,0.1); --accent: #7c5cfc;
+  }
+  body { font-family: 'IBM Plex Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; padding: 40px 20px 80px; }
+  .container { max-width: 960px; margin: 0 auto; }
+  .doc-header { border: 1px solid var(--border); background: var(--surface); border-radius: 12px; padding: 48px 48px 40px; margin-bottom: 40px; position: relative; overflow: hidden; }
+  .doc-header::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--blue), var(--green)); }
+  .doc-header .label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .doc-header h1 { font-size: 38px; font-weight: 700; color: #fff; margin-bottom: 8px; letter-spacing: -1px; }
+  .doc-header .subtitle { font-size: 16px; color: var(--muted); margin-bottom: 28px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  .meta-item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .meta-item .key { font-family: 'IBM Plex Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 4px; }
+  .meta-item .val { font-size: 14px; font-weight: 600; color: var(--text); }
+  .exec-box { border: 1px solid var(--red); background: rgba(255,92,92,0.06); border-radius: 10px; padding: 28px 32px; margin-bottom: 40px; }
+  .exec-box .title { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .exec-box p { font-size: 15px; color: var(--text); margin-bottom: 12px; }
+  .exec-box .blockers { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .blocker-tag { background: var(--red-bg); border: 1px solid var(--red); color: var(--red); font-family: 'IBM Plex Mono', monospace; font-size: 11px; padding: 4px 10px; border-radius: 4px; }
+  .section { margin-bottom: 48px; }
+  .section-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+  .section-title .num { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent); background: rgba(124,92,252,0.15); border: 1px solid rgba(124,92,252,0.3); padding: 2px 8px; border-radius: 4px; }
+  .section-divider { height: 1px; background: var(--border); margin: 10px 0 20px; }
+  .sub-title { font-size: 16px; font-weight: 700; color: var(--text); margin: 24px 0 10px; padding-left: 12px; border-left: 3px solid var(--accent); }
+  p { margin-bottom: 12px; color: var(--text); }
+  ul { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; color: var(--text); }
+  ol { padding-left: 20px; margin-bottom: 12px; }
+  ol li { margin-bottom: 6px; }
+  .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { background: var(--surface2); color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 1px; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+  .badge-critico { background: var(--red-bg); color: var(--red); border: 1px solid var(--red); }
+  .badge-alto { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange); }
+  .badge-medio { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow); }
+  .badge-baixo { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+  .badge-info { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue); }
+  .badge-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green); }
+  .badge-parcial { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow); }
+  .badge-pendente { background: var(--red-bg); color: var(--red); border: 1px solid var(--red); }
+  .badge-plan { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .col-card { border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; background: var(--surface); }
+  .col-card.green { border-color: var(--green); background: var(--green-bg); }
+  .col-card.red { border-color: var(--red); background: var(--red-bg); }
+  .col-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+  .col-card.green h4 { color: var(--green); }
+  .col-card.red h4 { color: var(--red); }
+  .col-card ul { padding-left: 18px; }
+  .col-card li { font-size: 13.5px; margin-bottom: 6px; }
+  .phase-grid { display: grid; gap: 16px; margin-bottom: 24px; }
+  .phase-card { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); padding: 20px 24px; display: grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: start; }
+  .phase-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+  .phase-estimate { display: inline-block; margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--green); background: var(--green-bg); border: 1px solid var(--green); padding: 2px 8px; border-radius: 4px; }
+  .phase-body h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: #fff; }
+  .phase-body p { font-size: 13.5px; color: var(--muted); margin-bottom: 8px; }
+  .phase-exit { font-size: 12px; font-style: italic; color: var(--green); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+  .info-table { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 24px; }
+  .info-table .row { display: grid; grid-template-columns: 180px 1fr; border-bottom: 1px solid var(--border); }
+  .info-table .row:last-child { border-bottom: none; }
+  .info-table .key { background: var(--surface2); padding: 10px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .info-table .val { padding: 10px 16px; font-size: 13.5px; }
+  strong.red { color: var(--red); }
+  strong.green { color: var(--green); }
+  strong.blue { color: var(--blue); }
+  strong.yellow { color: var(--yellow); }
+  code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; background: var(--surface2); padding: 1px 6px; border-radius: 3px; color: var(--blue); }
+  .top5-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+  .top5-item:last-child { border-bottom: none; }
+  .top5-num { font-family: 'IBM Plex Mono', monospace; font-size: 28px; font-weight: 700; color: var(--accent); opacity: 0.5; min-width: 36px; line-height: 1; padding-top: 2px; }
+  .top5-content h4 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .top5-content p { font-size: 13.5px; color: var(--muted); margin: 0; }
+  .verdict-card { border: 1px solid var(--accent); background: rgba(124,92,252,0.08); border-radius: 12px; padding: 28px 32px; margin-top: 32px; }
+  .verdict-card h3 { font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 12px; }
+  .verdict-card p { font-size: 15px; }
+  @media (max-width: 640px) { .meta-grid { grid-template-columns: 1fr 1fr; } .two-col { grid-template-columns: 1fr; } .phase-card { grid-template-columns: 1fr; } .doc-header { padding: 32px 24px; } .doc-header h1 { font-size: 28px; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="doc-header">
+    <div class="label">Relatório de Pré-Lançamento · Confidencial · Fevereiro 2026</div>
+    <h1>Match&Learn App</h1>
+    <div class="subtitle">Auditoria Técnica Completa — Segurança, Legal, Arquitetura e Roadmap</div>
+    <div class="meta-grid">
+      <div class="meta-item"><div class="key">Estágio Atual</div><div class="val">Protótipo Avançado / MVP</div></div>
+      <div class="meta-item"><div class="key">Pronto para Produção</div><div class="val" style="color:var(--red)">❌ NÃO</div></div>
+      <div class="meta-item"><div class="key">Estimativa para Lançar</div><div class="val" style="color:var(--green)">6–10 semanas</div></div>
+      <div class="meta-item"><div class="key">Bloqueadores Críticos</div><div class="val" style="color:var(--red)">7 identificados</div></div>
+      <div class="meta-item"><div class="key">Total de Issues</div><div class="val">20 mapeadas</div></div>
+      <div class="meta-item"><div class="key">Stack Principal</div><div class="val">Next.js 15 · Prisma · PostgreSQL</div></div>
+    </div>
+  </div>
+
+  <div class="exec-box">
+    <div class="title">⚠ Sumário Executivo</div>
+    <p>O Match&Learn possui fundação técnica sólida e conceito de produto diferenciado (Web3 Invisível + Gamificação), porém apresenta <strong class="red">7 vulnerabilidades críticas</strong> que impedem o lançamento imediato. Com foco nas correções certas, o app pode estar pronto para produção em <strong class="green">6 a 10 semanas</strong>.</p>
+    <p>Nenhuma falha exige reescrita total — todos os problemas são corrigíveis com a arquitetura atual.</p>
+    <div class="blockers">
+      <span class="blocker-tag">Autenticação sem senha</span>
+      <span class="blocker-tag">Anti-cheat inexistente</span>
+      <span class="blocker-tag">Sem rate limiting</span>
+      <span class="blocker-tag">Zero conformidade LGPD</span>
+      <span class="blocker-tag">Risco jurídico de tokens</span>
+      <span class="blocker-tag">Custo OpenAI descontrolado</span>
+      <span class="blocker-tag">Sem Admin RBAC no backend</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">01</span> Visão Geral do Aplicativo</div>
+    <div class="section-divider"></div>
+    <div class="info-table">
+      <div class="row"><div class="key">Stack Principal</div><div class="val">Next.js 15 (App Router), Server Actions, Prisma ORM, PostgreSQL</div></div>
+      <div class="row"><div class="key">Autenticação</div><div class="val">NextAuth.js (Google, GitHub, <span style="color:var(--red)">Credentials sem senha ⚠</span>)</div></div>
+      <div class="row"><div class="key">Blockchain</div><div class="val">Viem + Alchemy RPC — Custodial Wallet (servidor assina tudo)</div></div>
+      <div class="row"><div class="key">IA</div><div class="val">OpenAI API — geração de perguntas para batalhas</div></div>
+      <div class="row"><div class="key">Infraestrutura</div><div class="val">Vercel (Serverless), Supabase/Neon (DB)</div></div>
+      <div class="row"><div class="key">Monetização</div><div class="val">Freemium (Stripe no schema), B2B planejado, Ads</div></div>
+      <div class="row"><div class="key">Estágio</div><div class="val" style="color:var(--orange)">Protótipo Avançado / MVP — NÃO apto para produção pública</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">02</span> Matriz de Riscos — 20 Issues Identificadas</div>
+    <div class="section-divider"></div>
+    <p style="color:var(--muted);margin-bottom:16px;">Items com severidade CRÍTICO são bloqueadores absolutos de lançamento.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Severidade</th><th>Área</th><th>Problema</th><th>Solução Recomendada</th></tr></thead>
+        <tbody>
+          <tr><td><code>SEC-01</code></td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Autenticação</td><td>Login sem senha via CredentialsProvider permite acesso a QUALQUER conta com só o email</td><td>Remover o CredentialsProvider de teste. Manter apenas OAuth (Google/GitHub). Se precisar de login por email, implementar Magic Link com TTL de 15min.</td></tr>
+          <tr><td><code>SEC-02</code></td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Lógica de Negócio</td><td>Validação de batalha no frontend — backend aceita resultado sem verificar respostas</td><td>Mover toda lógica de verificação para Server Actions. Frontend envia apenas a resposta; backend compara com gabarito salvo no banco.</td></tr>
+          <tr><td><code>SEC-03</code></td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Rate Limiting</td><td>Nenhum rate limiting — farmar XP/Coins via scripts é trivial em segundos</td><td>Implementar middleware com Upstash Redis. Limites: máx. 10 batalhas/hora por userId, 100 req/min por IP.</td></tr>
+          <tr><td><code>SEC-04</code></td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Autorização</td><td>Ações de Admin sem verificação robusta de role no backend</td><td>Adicionar em toda Server Action sensível: <code>if (session.user.role !== 'ADMIN') throw new Error('Forbidden')</code></td></tr>
+          <tr><td><code>SEC-05</code></td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Legal / LGPD</td><td>Zero conformidade com LGPD — sem política de privacidade, termos ou consentimento</td><td>Criar Política de Privacidade e Termos de Uso. Adicionar banner de cookies. Implementar endpoint de exclusão de dados (Art. 18).</td></tr>
+          <tr><td><code>SEC-06</code></td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Legal / Web3</td><td>Promessa de "ativos com valor real" sem lastro, custódia real ou base jurídica</td><td>Redigir disclaimers: ativos são pontos de fidelidade, sem garantia de valor financeiro. Consultar advogado especializado em criptoativos.</td></tr>
+          <tr><td><code>SEC-07</code></td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Custos / API</td><td>OpenAI e Alchemy sem teto de gastos — um ataque pode gerar custos exorbitantes</td><td>Configurar hard limits nos dashboards. Implementar banco de perguntas pré-geradas para reduzir chamadas à OpenAI em 90%.</td></tr>
+          <tr><td><code>SEC-08</code></td><td><span class="badge badge-alto">ALTO</span></td><td>Integridade de Dados</td><td>Batalhas abandonadas ficam "ativas" indefinidamente no banco sem limpeza</td><td>Criar cron job que marca batalhas com status "active" por mais de 30 minutos como "expired".</td></tr>
+          <tr><td><code>SEC-09</code></td><td><span class="badge badge-alto">ALTO</span></td><td>Web3 / UX</td><td>Falha silenciosa no minting de NFT: usuário ganha nível mas não recebe badge sem aviso</td><td>Implementar retry automático (3x). Se falhar, salvar em fila pending_mints e notificar usuário via toast persistente.</td></tr>
+          <tr><td><code>SEC-10</code></td><td><span class="badge badge-alto">ALTO</span></td><td>Validação</td><td>Zod presente mas não usado estritamente em todas as Server Actions</td><td>Auditar e adicionar schema Zod em cada Server Action. Validar todos os inputs antes de qualquer operação de banco.</td></tr>
+          <tr><td><code>SEC-11</code></td><td><span class="badge badge-alto">ALTO</span></td><td>Monitoramento</td><td>Apenas console.log — sem observabilidade, alertas ou rastreamento de erros</td><td>Integrar Sentry (gratuito até 5k eventos/mês). Adicionar Vercel Analytics ou Posthog para métricas de uso.</td></tr>
+          <tr><td><code>SEC-12</code></td><td><span class="badge badge-alto">ALTO</span></td><td>Isolamento</td><td>IDs de batalha podem não ser validados como pertencentes ao userId da sessão (IDOR)</td><td>Em todas as queries de batalha: adicionar <code>AND userId = session.user.id</code> para evitar IDOR.</td></tr>
+          <tr><td><code>SEC-13</code></td><td><span class="badge badge-medio">MÉDIO</span></td><td>Tratamento de Erros</td><td>Erros de banco retornam {success:false} sem contexto — UX pobre e debugging difícil</td><td>Criar sistema de error codes padronizado. Exibir mensagens amigáveis ao usuário; logar detalhes técnicos apenas no servidor.</td></tr>
+          <tr><td><code>SEC-14</code></td><td><span class="badge badge-medio">MÉDIO</span></td><td>Backup</td><td>Estratégia de backup 100% dependente do provedor sem política definida</td><td>Configurar backups automáticos diários no Supabase/Neon. Testar restore mensalmente. Documentar RTO e RPO.</td></tr>
+          <tr><td><code>SEC-15</code></td><td><span class="badge badge-medio">MÉDIO</span></td><td>Web3 / Custódia</td><td>Usuário sem chave privada — perde acesso ao email = perde todos os ativos digitais</td><td>Comunicar claramente nas FAQs. Implementar email de recuperação secundário.</td></tr>
+          <tr><td><code>SEC-16</code></td><td><span class="badge badge-medio">MÉDIO</span></td><td>Autenticação</td><td>Tokens de acesso OAuth potencialmente sem rotação segura</td><td>Revisar configuração de sessão NextAuth. Usar JWT com expiração curta (1h) e refresh token rotativo.</td></tr>
+          <tr><td><code>SEC-17</code></td><td><span class="badge badge-baixo">BAIXO</span></td><td>Docs</td><td>README documenta "demo in-memory" mas o banco é real — documentação enganosa</td><td>Atualizar README com arquitetura real, variáveis de ambiente necessárias e instruções de setup corretas.</td></tr>
+          <tr><td><code>SEC-18</code></td><td><span class="badge badge-baixo">BAIXO</span></td><td>Monetização</td><td>Lógica de bloqueio de recursos premium não aplicada estritamente no backend</td><td>Adicionar verificação de subscription em Server Actions de recursos premium.</td></tr>
+          <tr><td><code>SEC-19</code></td><td><span class="badge badge-baixo">BAIXO</span></td><td>Performance</td><td>Sem cache explícito em queries frequentes (leaderboard, marketplace)</td><td>Usar React Cache ou revalidatePath estrategicamente. Considerar Redis para ranking.</td></tr>
+          <tr><td><code>SEC-20</code></td><td><span class="badge badge-info">INFO</span></td><td>UX</td><td>Estado visual inconsistente durante loading states em fluxos de batalha</td><td>Adicionar skeleton loaders e estados de loading explícitos em todos os fluxos críticos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">03</span> Auditoria de Segurança Detalhada</div>
+    <div class="section-divider"></div>
+    <div class="sub-title">3.1 Autenticação e Controle de Acesso <span class="badge badge-critico" style="margin-left:8px">CRÍTICO</span></div>
+    <p>O <code>CredentialsProvider</code> configurado como "Test Account" permite que qualquer pessoa acesse qualquer conta sabendo apenas o e-mail. Não há senha, não há verificação de propriedade.</p>
+    <ul>
+      <li>Bypass total de autenticação: <code>POST /api/auth/callback/credentials</code> aceita qualquer email.</li>
+      <li>Ausência de verificação de role nas Server Actions.</li>
+      <li>IDOR potencial: IDs de recursos como <code>battleId</code> não são verificados como pertencentes ao usuário da sessão.</li>
+    </ul>
+
+    <div class="sub-title">3.2 Integridade do Jogo — Anti-Cheat <span class="badge badge-critico" style="margin-left:8px">CRÍTICO</span></div>
+    <p>A arquitetura atual delega ao frontend a responsabilidade de informar se o jogador ganhou ou perdeu. O backend registra o resultado sem validar.</p>
+    <div class="two-col">
+      <div class="col-card red">
+        <h4>❌ Fluxo Atual (Inseguro)</h4>
+        <ol style="padding-left:18px;font-size:13.5px;">
+          <li>Frontend inicia batalha</li>
+          <li>Frontend recebe perguntas + respostas (gabarito incluso)</li>
+          <li>Frontend "verifica" se acertou</li>
+          <li>Frontend envia resultado ao backend</li>
+          <li>Backend credita XP/Coins sem questionar</li>
+        </ol>
+        <p style="margin-top:12px;font-size:12.5px;font-style:italic;color:var(--red)">⚠ Qualquer usuário técnico pode pular etapas 1–4.</p>
+      </div>
+      <div class="col-card green">
+        <h4>✅ Fluxo Correto (Seguro)</h4>
+        <ol style="padding-left:18px;font-size:13.5px;">
+          <li>Frontend solicita início de batalha</li>
+          <li>Server gera questões, salva gabarito no DB</li>
+          <li>Server retorna apenas opções (sem gabarito)</li>
+          <li>Frontend envia resposta escolhida pelo usuário</li>
+          <li>Server verifica no DB, registra acerto/erro</li>
+          <li>Server calcula recompensa e credita</li>
+        </ol>
+        <p style="margin-top:12px;font-size:12.5px;font-style:italic;color:var(--green)">✓ Gabarito nunca chega ao cliente.</p>
+      </div>
+    </div>
+
+    <div class="sub-title">3.3 Rate Limiting e Proteção contra Abuso <span class="badge badge-critico" style="margin-left:8px">CRÍTICO</span></div>
+    <p>Sem rate limiting, o sistema está exposto a farm automatizado e ataques de custo.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">04</span> Conformidade Legal e Regulatória</div>
+    <div class="section-divider"></div>
+    <div class="sub-title">4.1 LGPD — Requisitos Obrigatórios <span class="badge badge-critico" style="margin-left:8px">CRÍTICO</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Requisito LGPD</th><th>Status</th><th>O que Implementar</th></tr></thead>
+        <tbody>
+          <tr><td>Política de Privacidade</td><td><span class="badge badge-pendente">⛔ AUSENTE</span></td><td>Redigir documento descrevendo quais dados, por quê, por quanto tempo.</td></tr>
+          <tr><td>Termos de Uso</td><td><span class="badge badge-pendente">⛔ AUSENTE</span></td><td>Redigir termos com regras de uso e limitações dos ativos digitais.</td></tr>
+          <tr><td>Consentimento de Cookies</td><td><span class="badge badge-pendente">⛔ AUSENTE</span></td><td>Implementar banner com opção de aceitar/recusar.</td></tr>
+          <tr><td>Direito de Acesso (Art. 18)</td><td><span class="badge badge-pendente">⛔ AUSENTE</span></td><td>Criar página /account/privacy com exportar/excluir.</td></tr>
+          <tr><td>Direito de Exclusão (Art. 18)</td><td><span class="badge badge-pendente">⛔ AUSENTE</span></td><td>Implementar soft delete com anonimização após 30 dias.</td></tr>
+          <tr><td>Base Legal de Tratamento</td><td><span class="badge badge-pendente">⛔ AUSENTE</span></td><td>Definir base legal para cada tipo de dado tratado.</td></tr>
+          <tr><td>DPO / Canal de Contato</td><td><span class="badge badge-pendente">⛔ AUSENTE</span></td><td>Designar responsável e publicar email de contato.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="sub-title">4.2 Aspectos Jurídicos do Web3 / Tokens <span class="badge badge-critico" style="margin-left:8px">CRÍTICO</span></div>
+    <p>A promessa de "ativos com valor real" sem base jurídica clara é o maior risco legal do produto.</p>
+    <ul>
+      <li><strong>Contratar consultoria jurídica especializada antes do lançamento público.</strong></li>
+      <li>Reclassificar tokens como "pontos de fidelidade sem valor de mercado garantido".</li>
+      <li>Adicionar disclaimers em todos os pontos que mencionam "valor real".</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">05</span> Análise de Arquitetura e Qualidade de Código</div>
+    <div class="section-divider"></div>
+    <div class="two-col">
+      <div class="col-card green">
+        <h4>✅ Pontos Fortes</h4>
+        <ul>
+          <li>Next.js 15 App Router + Server Actions reduz surface de ataque.</li>
+          <li>Prisma ORM previne SQL injection por padrão.</li>
+          <li>PostgreSQL é a escolha certa para o modelo de dados.</li>
+          <li>Custodial Wallet no servidor é correto para o público-alvo.</li>
+          <li>Serverless na Vercel: escalabilidade automática e zero custo inicial.</li>
+        </ul>
+      </div>
+      <div class="col-card red">
+        <h4>🚫 Débito Técnico Crítico</h4>
+        <ul>
+          <li>Zod presente mas não aplicado em todas as Server Actions.</li>
+          <li>Sistema de erros sem padronização.</li>
+          <li>Zero observabilidade — operação às cegas.</li>
+          <li>Batalhas abandonadas sem limpeza automática.</li>
+          <li>Minting de NFT com falha silenciosa sem retry.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">06</span> Infraestrutura, Custos e Escalabilidade</div>
+    <div class="section-divider"></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Serviço</th><th>Custo por Uso</th><th>Risco sem Limite</th><th>Solução</th></tr></thead>
+        <tbody>
+          <tr><td>OpenAI GPT-4</td><td>~$0.01/pergunta</td><td><span class="badge badge-critico">CRÍTICO</span></td><td>Banco de perguntas pré-geradas. Hard limit $100/mês.</td></tr>
+          <tr><td>Alchemy RPC</td><td>Pay-per-call</td><td><span class="badge badge-alto">ALTO</span></td><td>Rate limit por usuário. Hard limit no dashboard.</td></tr>
+          <tr><td>Vercel Functions</td><td>100GB-hrs/mês grátis</td><td><span class="badge badge-medio">MÉDIO</span></td><td>Limitar execuções longas. Edge functions.</td></tr>
+          <tr><td>Supabase/Neon DB</td><td>Plano gratuito limitado</td><td><span class="badge badge-baixo">BAIXO</span></td><td>Connection pooling com PgBouncer.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">07</span> Roadmap de Lançamento — 6 Fases</div>
+    <div class="section-divider"></div>
+    <div class="phase-grid">
+      <div class="phase-card"><div><div class="phase-label">Fase 0</div><div class="phase-estimate">3–5 dias</div></div><div class="phase-body"><h4>Preparação</h4><p>Hard limits OpenAI/Alchemy. Sentry. Revisar secrets/env. Consultoria jurídica.</p><div class="phase-exit">✓ Monitoramento ativo. Custos com teto. Sem secrets expostos.</div></div></div>
+      <div class="phase-card"><div><div class="phase-label">Fase 1</div><div class="phase-estimate">1–2 semanas</div></div><div class="phase-body"><h4>Segurança Core</h4><p>Remover CredentialsProvider. Role check. Zod. IDOR fix. Rate limiting.</p><div class="phase-exit">✓ Login seguro. Sem bypass. Rate limiting ativo.</div></div></div>
+      <div class="phase-card"><div><div class="phase-label">Fase 2</div><div class="phase-estimate">1–2 semanas</div></div><div class="phase-body"><h4>Integridade do Jogo</h4><p>Validação server-side. Banco de perguntas pré-geradas. Cron de limpeza. Retry de minting.</p><div class="phase-exit">✓ Impossível farmar XP via script. Gabarito nunca no cliente.</div></div></div>
+      <div class="phase-card"><div><div class="phase-label">Fase 3</div><div class="phase-estimate">1 semana</div></div><div class="phase-body"><h4>Conformidade Legal</h4><p>Política de Privacidade. Termos de Uso. Cookie banner. Controle de dados. Disclaimers.</p><div class="phase-exit">✓ Conformidade LGPD básica. Disclaimers publicados.</div></div></div>
+      <div class="phase-card"><div><div class="phase-label">Fase 4</div><div class="phase-estimate">1 semana</div></div><div class="phase-body"><h4>Polimento e QA</h4><p>Loading states. Error handling. Testes E2E. Revisão UX. README atualizado.</p><div class="phase-exit">✓ Sem crashes. UX consistente. Docs atualizados.</div></div></div>
+      <div class="phase-card"><div><div class="phase-label">Fase 5</div><div class="phase-estimate">2–4 semanas</div></div><div class="phase-body"><h4>Lançamento Beta</h4><p>Beta fechado 100–500 usuários. Monitoramento intensivo. Coleta de feedback. Ajustes rápidos.</p><div class="phase-exit">✓ NPS > 30. Sem incidentes de segurança.</div></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="num">08</span> Top 5 Ações Imediatas</div>
+    <div class="section-divider"></div>
+    <div style="border:1px solid var(--border);border-radius:10px;padding:8px 24px;background:var(--surface);">
+      <div class="top5-item"><div class="top5-num">01</div><div class="top5-content"><h4>Configurar hard limits de custo no OpenAI e Alchemy — AGORA</h4><p>Um único vazamento pode gerar fatura de milhares de dólares em horas.</p></div></div>
+      <div class="top5-item"><div class="top5-num">02</div><div class="top5-content"><h4>Remover o CredentialsProvider de teste do código</h4><p>Uma linha que dá acesso total a qualquer conta. Trivial de corrigir.</p></div></div>
+      <div class="top5-item"><div class="top5-num">03</div><div class="top5-content"><h4>Contratar consultoria jurídica especializada em tech/cripto</h4><p>LGPD e promessas de valor financeiro têm prazos e multas reais.</p></div></div>
+      <div class="top5-item"><div class="top5-num">04</div><div class="top5-content"><h4>Integrar Sentry (30 minutos, plano gratuito)</h4><p>Sem observabilidade, você não sabe o que está quebrando em produção.</p></div></div>
+      <div class="top5-item" style="border-bottom:none"><div class="top5-num">05</div><div class="top5-content"><h4>Comunicar internamente: "ainda não é produção"</h4><p>Evitar compartilhamento do link atual pensando ser o produto final.</p></div></div>
+    </div>
+    <div class="verdict-card">
+      <h3>⚖ Veredicto Final</h3>
+      <p>O Match&Learn tem um <strong class="green">conceito de produto sólido e diferenciado</strong>. A combinação de gamificação + Web3 invisível endereça uma dor real de engajamento em edtech, e a stack técnica é madura e escalável.</p>
+      <p style="margin-top:12px">O produto não está distante de ser lançável — mas a distância que existe é crítica. <strong class="green">Todos os 20 problemas identificados são corrigíveis sem reescrita total</strong>. Com um time focado, o Match&Learn pode atingir o padrão mínimo de produção <strong class="green">em 6 semanas</strong>.</p>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:48px;font-family:'IBM Plex Mono',monospace;">— Fim do Relatório · Match&Learn App · Auditoria Técnica Completa · Fevereiro 2026 —</p>
+</div>
+</body>
+</html>

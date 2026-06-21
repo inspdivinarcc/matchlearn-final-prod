@@ -5,6 +5,9 @@ import { Web3Provider } from "@/providers/Web3Provider";
 
 import { AuthProvider } from "@/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/react";
+
+import { CookieBanner } from "@/components/cookie-banner";
 
 export const metadata: Metadata = {
   title: "Match&Learn - Gamificação e Web3",
@@ -39,6 +42,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Web3Provider>
             {children}
             <Toaster />
+            <Analytics />
+            <CookieBanner />
           </Web3Provider>
         </AuthProvider>
       </body>

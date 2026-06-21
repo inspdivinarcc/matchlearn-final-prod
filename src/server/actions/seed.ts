@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { requireAdmin } from '@/lib/auth-guard';
 
 const INITIAL_CONTENT = [
     {
@@ -38,6 +39,12 @@ const INITIAL_CONTENT = [
 ];
 
 export async function seedInitialContent() {
+    // SEC-04: Only admins can seed content
+    const auth = await requireAdmin();
+    if (!auth.authorized) {
+        return { success: false, error: auth.error };
+    }
+
     try {
         const count = await prisma.content.count();
         if (count > 0) {

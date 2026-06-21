@@ -4,45 +4,76 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { finishBotBattle } from '@/server/actions/battle';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { submitBattleAnswer } from '@/server/actions/battle';
+import { useRouter } from 'next/navigation';
 import { Loader2, Trophy, XCircle, Clock, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { getQuestionById, getRandomQuestion } from '@/lib/questions';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
 import { use } from 'react';
 
+interface QuestionOption {
+    id: string;
+    text: string;
+}
+
+interface Question {
+    id: string;
+    text: string;
+    options: QuestionOption[];
+}
+
+interface BattleResult {
+    success: boolean;
+    isCorrect: boolean;
+    correctAnswerId: string;
+    xpGained: number;
+    coinsGained: number;
+}
+
 export default function ActiveBattlePage({ params }: { params: Promise<{ battleId: string }> }) {
     const { battleId } = use(params);
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const questionId = searchParams.get('q');
 
-    const [question, setQuestion] = useState<any>(null);
+    const [question, setQuestion] = useState<Question | null>(null);
     const [timeLeft, setTimeLeft] = useState(30);
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [result, setResult] = useState<{ success: boolean; didWin: boolean } | null>(null);
+    const [result, setResult] = useState<BattleResult | null>(null);
 
-    // Load question
+    // Load question from sessionStorage (put there by arena entry page)
     useEffect(() => {
-        if (questionId) {
-            const q = getQuestionById(questionId);
-            setQuestion(q || getRandomQuestion());
+        const stored = sessionStorage.getItem(`battle_${battleId}`);
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                setQuestion(parsed);
+                // Clean up after loading
+                sessionStorage.removeItem(`battle_${battleId}`);
+            } catch {
+                router.push('/arena');
+            }
         } else {
-            setQuestion(getRandomQuestion());
+            // No question data — battle may have expired or user refreshed
+            router.push('/arena');
         }
-    }, [questionId]);
+    }, [battleId, router]);
 
-    // Handle answer submission
-    const handleAnswer = useCallback(async (isCorrect: boolean) => {
+    // Handle answer submission — sends ONLY answerId to server
+    const handleAnswer = useCallback(async (answerId: string | null) => {
+        if (!answerId) return;
         setIsSubmitting(true);
         try {
-            const response = await finishBotBattle(battleId, isCorrect);
+            const response = await submitBattleAnswer(battleId, answerId);
             if (response.success) {
-                setResult({ success: true, didWin: isCorrect });
-                if (isCorrect) {
+                setResult({
+                    success: true,
+                    isCorrect: response.isCorrect ?? false,
+                    correctAnswerId: response.correctAnswerId ?? '',
+                    xpGained: response.xpGained ?? 0,
+                    coinsGained: response.coinsGained ?? 0,
+                });
+                if (response.isCorrect) {
                     confetti({
                         particleCount: 100,
                         spread: 70,
@@ -50,8 +81,28 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
                     });
                 }
             } else {
-                // Handle error (maybe show a toast)
-                console.error("Battle finish failed");
+                console.error("Battle submit failed:", response.error);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        setIsSubmitting(false);
+    }, [battleId]);
+
+    // Timer — auto-submit when time runs out
+    const handleTimeUp = useCallback(async () => {
+        setIsSubmitting(true);
+        try {
+            // Submit with an empty answer — server will mark as wrong
+            const response = await submitBattleAnswer(battleId, '__timeout__');
+            if (response.success) {
+                setResult({
+                    success: true,
+                    isCorrect: false,
+                    correctAnswerId: response.correctAnswerId ?? '',
+                    xpGained: 0,
+                    coinsGained: 0,
+                });
             }
         } catch (error) {
             console.error(error);
@@ -65,9 +116,9 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
             const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
             return () => clearInterval(timer);
         } else if (timeLeft === 0 && !result && !isSubmitting && question) {
-            handleAnswer(false); // Time's up
+            handleTimeUp();
         }
-    }, [timeLeft, result, isSubmitting, question, handleAnswer]);
+    }, [timeLeft, result, isSubmitting, question, handleTimeUp]);
 
 
     if (!question) return (
@@ -86,9 +137,9 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
                     transition={{ type: "spring", duration: 0.5 }}
                     className="w-full"
                 >
-                    <Card className={`border-2 ${result.didWin ? 'border-green-500/50 bg-green-500/10' : 'border-red-500/50 bg-red-500/10'} backdrop-blur-xl`}>
+                    <Card className={`border-2 ${result.isCorrect ? 'border-green-500/50 bg-green-500/10' : 'border-red-500/50 bg-red-500/10'} backdrop-blur-xl`}>
                         <CardContent className="pt-10 pb-8 space-y-6 text-center">
-                            {result.didWin ? (
+                            {result.isCorrect ? (
                                 <>
                                     <div className="relative">
                                         <div className="absolute inset-0 bg-green-500/30 blur-3xl rounded-full" />
@@ -101,11 +152,11 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
                                     <div className="flex justify-center gap-4 py-4">
                                         <div className="bg-black/20 p-3 rounded-xl min-w-[80px]">
                                             <div className="text-xs text-green-300 uppercase font-bold">XP</div>
-                                            <div className="text-2xl font-bold text-white">+50</div>
+                                            <div className="text-2xl font-bold text-white">+{result.xpGained}</div>
                                         </div>
                                         <div className="bg-black/20 p-3 rounded-xl min-w-[80px]">
                                             <div className="text-xs text-yellow-300 uppercase font-bold">Coins</div>
-                                            <div className="text-2xl font-bold text-white">+20</div>
+                                            <div className="text-2xl font-bold text-white">+{result.coinsGained}</div>
                                         </div>
                                     </div>
                                 </>
@@ -120,7 +171,7 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
                             )}
                             <Button
                                 onClick={() => router.push('/arena')}
-                                className={`w-full py-6 text-lg font-bold shadow-lg ${result.didWin ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
+                                className={`w-full py-6 text-lg font-bold shadow-lg ${result.isCorrect ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white`}
                             >
                                 Voltar para Arena
                             </Button>
@@ -166,7 +217,7 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
                     </CardHeader>
                     <CardContent className="space-y-4 pb-8">
                         <div className="grid gap-4">
-                            {question.options.map((option: any, index: number) => (
+                            {question.options.map((option: QuestionOption, index: number) => (
                                 <motion.button
                                     key={option.id}
                                     initial={{ x: -20, opacity: 0 }}
@@ -209,7 +260,7 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
                 </Card>
             </motion.div>
 
-            {/* Action Button */}
+            {/* Action Button — sends ONLY the selected option ID to the server */}
             <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -224,7 +275,7 @@ export default function ActiveBattlePage({ params }: { params: Promise<{ battleI
                         }
                     `}
                     disabled={!selectedOption || isSubmitting}
-                    onClick={() => handleAnswer(selectedOption === question.correctId)}
+                    onClick={() => handleAnswer(selectedOption)}
                 >
                     {isSubmitting ? (
                         <>

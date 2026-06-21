@@ -15,13 +15,14 @@ export default function ArenaPage() {
     const handleStartBattle = async () => {
         setIsLoading(true);
         try {
-            const result = await startBotBattle('general'); // Default topic for now
-            if (result.success && result.battleId) {
-                // Redirect with questionId if available
-                const url = result.questionId
-                    ? `/arena/${result.battleId}?q=${result.questionId}`
-                    : `/arena/${result.battleId}`;
-                router.push(url);
+            const result = await startBotBattle('general');
+            if (result.success && result.battleId && result.question) {
+                // Store question data in sessionStorage (never in URL)
+                sessionStorage.setItem(
+                    `battle_${result.battleId}`,
+                    JSON.stringify(result.question)
+                );
+                router.push(`/arena/${result.battleId}`);
             } else {
                 console.error('Failed to start battle:', result.error);
                 setIsLoading(false);

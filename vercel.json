@@ -1,0 +1,16 @@
+{
+    "crons": [
+        {
+            "path": "/api/cron/expire-battles",
+            "schedule": "*/15 * * * *"
+        },
+        {
+            "path": "/api/cron/retry-mints",
+            "schedule": "0 * * * *"
+        },
+        {
+            "path": "/api/cron/generate-questions",
+            "schedule": "0 0 * * 0"
+        }
+    ]
+}

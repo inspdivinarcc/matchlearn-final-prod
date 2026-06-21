@@ -26,21 +26,21 @@ Atendendo ao seu pedido, vamos utilizar:
 
 ## Passo 2: Variáveis de Ambiente
 
-Configure as seguintes variáveis no seu projeto na Vercel:
+Configure as seguintes variáveis no seu projeto na Netlify (Site Settings > Environment variables):
 
 | Variável | Descrição | Exemplo |
 | :--- | :--- | :--- |
 | `DATABASE_URL` | Conexão do Postgres | `postgresql://user:pass@host:5432/db` |
 | `NEXTAUTH_SECRET` | String aleatória para criptografia | `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | URL de produção | `https://seu-app.vercel.app` |
+| `NEXTAUTH_URL` | URL de produção | `https://seu-app.netlify.app` |
 | `WALLET_PRIVATE_KEY` | Chave privada da carteira do servidor | `0x...` |
 | `ALCHEMY_RPC_URL` | RPC URL (ex: Sepolia) | `https://eth-sepolia.g.alchemy.com/v2/...` |
 | `OPENAI_API_KEY` | (Opcional) Para IA real | `sk-...` |
 
-## Passo 3: Deploy na Vercel
+## Passo 3: Deploy na Netlify
 
-1.  Importe seu repositório na Vercel.
-2.  A Vercel detectará o Next.js automaticamente.
+1.  Importe seu repositório na Netlify.
+2.  A Netlify detectará o Next.js automaticamente (certifique-se de que o plugin @netlify/plugin-nextjs está instalado ou configurado no netlify.toml).
 3.  Adicione as variáveis de ambiente.
 4.  Clique em **Deploy**.
 
@@ -53,4 +53,4 @@ Configure as seguintes variáveis no seu projeto na Vercel:
 ## Solução de Problemas
 
 -   **Erro do Prisma**: Se houver erros de banco, certifique-se de que `npx prisma migrate deploy` foi executado.
--   **Timeouts**: Actions do Next.js têm limite de tempo na Vercel (plano Free).
+-   **Timeouts**: Serverless Functions têm limite de tempo na Netlify (10s padrão no plano Free).

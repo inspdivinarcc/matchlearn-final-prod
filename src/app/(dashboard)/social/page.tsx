@@ -6,24 +6,35 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Heart, MessageCircle, Share2, Send, Plus } from 'lucide-react';
-import { createPost, getFeed, toggleLike } from '@/server/actions/social';
+import { createPost, getFeed, toggleLike, getStories, createStory } from '@/server/actions/social';
 import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 export default function SocialPage() {
     const { data: session } = useSession();
     const [posts, setPosts] = useState<any[]>([]);
+    const [dbStories, setDbStories] = useState<any[]>([]);
     const [newPostContent, setNewPostContent] = useState('');
+    const [newStoryContent, setNewStoryContent] = useState('');
     const [isPosting, setIsPosting] = useState(false);
+    const [isPostingStory, setIsPostingStory] = useState(false);
+    const [isStoryOpen, setIsStoryOpen] = useState(false);
 
     useEffect(() => {
         loadFeed();
+        loadStories();
     }, []);
 
     const loadFeed = async () => {
         const feed = await getFeed();
         setPosts(feed);
+    };
+
+    const loadStories = async () => {
+        const data = await getStories();
+        setDbStories(data);
     };
 
     const handleCreatePost = async () => {
@@ -39,6 +50,23 @@ export default function SocialPage() {
             loadFeed();
         } else {
             toast.error('Erro ao criar post.');
+        }
+    };
+
+    const handleCreateStory = async () => {
+        if (!newStoryContent.trim()) return;
+
+        setIsPostingStory(true);
+        const result = await createStory(newStoryContent);
+        setIsPostingStory(false);
+
+        if (result.success) {
+            setNewStoryContent('');
+            setIsStoryOpen(false);
+            toast.success('Story publicado!');
+            loadStories();
+        } else {
+            toast.error('Erro ao publicar story.');
         }
     };
 
@@ -64,12 +92,11 @@ export default function SocialPage() {
         loadFeed(); // Sync with server
     };
 
-    const stories = [
-        { id: 'create', user: 'Você', avatar: '', isCreate: true },
-        { id: 1, user: 'Sarah Dev', avatar: 'S', color: 'from-pink-500 to-rose-500' },
-        { id: 2, user: 'Alex Code', avatar: 'A', color: 'from-blue-500 to-cyan-500' },
-        { id: 3, user: 'Mike AI', avatar: 'M', color: 'from-purple-500 to-indigo-500' },
-        { id: 4, user: 'Emma UX', avatar: 'E', color: 'from-yellow-500 to-orange-500' },
+    const mockStories = [
+        { id: 'mock-1', user: 'Sarah Dev', avatar: 'S', color: 'from-pink-500 to-rose-500' },
+        { id: 'mock-2', user: 'Alex Code', avatar: 'A', color: 'from-blue-500 to-cyan-500' },
+        { id: 'mock-3', user: 'Mike AI', avatar: 'M', color: 'from-purple-500 to-indigo-500' },
+        { id: 'mock-4', user: 'Emma UX', avatar: 'E', color: 'from-yellow-500 to-orange-500' },
     ];
 
     return (
@@ -86,17 +113,72 @@ export default function SocialPage() {
 
             {/* Stories Rail */}
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {stories.map((story) => (
-                    <div key={story.id} className="flex flex-col items-center space-y-2 min-w-[72px] cursor-pointer group">
-                        <div className={`w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr ${story.isCreate ? 'from-slate-700 to-slate-600' : story.color || 'from-indigo-500 to-purple-500'} group-hover:scale-105 transition-transform`}>
-                            <div className="w-full h-full rounded-full bg-background border-2 border-background flex items-center justify-center overflow-hidden">
-                                {story.isCreate ? (
+                {/* Create Story */}
+                <Dialog open={isStoryOpen} onOpenChange={setIsStoryOpen}>
+                    <DialogTrigger asChild>
+                        <div className="flex flex-col items-center space-y-2 min-w-[72px] cursor-pointer group">
+                            <div className="w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr from-slate-700 to-slate-600 group-hover:scale-105 transition-transform">
+                                <div className="w-full h-full rounded-full bg-background border-2 border-background flex items-center justify-center overflow-hidden">
                                     <Plus className="w-6 h-6 text-muted-foreground" />
-                                ) : (
-                                    <Avatar className="w-full h-full">
-                                        <AvatarFallback className="bg-slate-800 text-white font-bold">{story.avatar}</AvatarFallback>
-                                    </Avatar>
-                                )}
+                                </div>
+                            </div>
+                            <span className="text-xs font-medium text-muted-foreground truncate w-full text-center">
+                                Você
+                            </span>
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-200">
+                        <DialogHeader>
+                            <DialogTitle>Novo Story</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <Input
+                                placeholder="Compartilhe uma ideia rápida (some em 24h)..."
+                                className="bg-slate-800 border-slate-700 text-slate-200 focus-visible:ring-indigo-500"
+                                value={newStoryContent}
+                                onChange={(e) => setNewStoryContent(e.target.value)}
+                                maxLength={100}
+                                onKeyDown={(e) => e.key === 'Enter' && handleCreateStory()}
+                            />
+                            <div className="flex justify-end">
+                                <Button 
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white" 
+                                    onClick={handleCreateStory} 
+                                    disabled={isPostingStory || !newStoryContent.trim()}
+                                >
+                                    {isPostingStory ? 'Enviando...' : 'Publicar'}
+                                </Button>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Real DB Stories */}
+                {dbStories.map((story) => (
+                    <div key={story.id} className="flex flex-col items-center space-y-2 min-w-[72px] cursor-pointer group">
+                        <div className="w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr from-indigo-500 to-purple-500 group-hover:scale-105 transition-transform">
+                            <div className="w-full h-full rounded-full bg-background border-2 border-background flex items-center justify-center overflow-hidden">
+                                <Avatar className="w-full h-full">
+                                    <AvatarFallback className="bg-slate-800 text-white font-bold">
+                                        {story.author.username?.[0] || 'U'}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </div>
+                        </div>
+                        <span className="text-xs font-medium text-muted-foreground truncate w-full text-center">
+                            {story.author.username?.split(' ')[0] || 'User'}
+                        </span>
+                    </div>
+                ))}
+
+                {/* Mock Stories (para não ficar vazio) */}
+                {mockStories.map((story) => (
+                    <div key={story.id} className="flex flex-col items-center space-y-2 min-w-[72px] cursor-pointer group">
+                        <div className={`w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr ${story.color} group-hover:scale-105 transition-transform`}>
+                            <div className="w-full h-full rounded-full bg-background border-2 border-background flex items-center justify-center overflow-hidden">
+                                <Avatar className="w-full h-full">
+                                    <AvatarFallback className="bg-slate-800 text-white font-bold">{story.avatar}</AvatarFallback>
+                                </Avatar>
                             </div>
                         </div>
                         <span className="text-xs font-medium text-muted-foreground truncate w-full text-center">

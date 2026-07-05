@@ -102,3 +102,60 @@ export async function toggleLike(postId: string) {
         return { success: false, error: 'Failed to toggle like' };
     }
 }
+
+export async function createStory(content: string) {
+    const session = await getServerSession(authOptions);
+    if (!session?.user || !(session.user as any).id) {
+        return { success: false, error: 'Unauthorized' };
+    }
+
+    const userId = (session.user as any).id;
+
+    try {
+        // Expirar em 24h
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 24);
+
+        const story = await prisma.story.create({
+            data: {
+                content,
+                authorId: userId,
+                expiresAt,
+            },
+        });
+
+        revalidatePath('/social');
+        return { success: true, story };
+    } catch (error) {
+        console.error('Error creating story:', error);
+        return { success: false, error: 'Failed to create story' };
+    }
+}
+
+export async function getStories() {
+    try {
+        const now = new Date();
+        const stories = await prisma.story.findMany({
+            where: {
+                expiresAt: {
+                    gt: now,
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                        image: true,
+                    },
+                },
+            },
+        });
+
+        return stories;
+    } catch (error) {
+        console.error('Error fetching stories:', error);
+        return [];
+    }
+}

@@ -155,20 +155,43 @@ export default function SocialPage() {
 
                 {/* Real DB Stories */}
                 {dbStories.map((story) => (
-                    <div key={story.id} className="flex flex-col items-center space-y-2 min-w-[72px] cursor-pointer group">
-                        <div className="w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr from-indigo-500 to-purple-500 group-hover:scale-105 transition-transform">
-                            <div className="w-full h-full rounded-full bg-background border-2 border-background flex items-center justify-center overflow-hidden">
-                                <Avatar className="w-full h-full">
+                    <Dialog key={story.id}>
+                        <DialogTrigger asChild>
+                            <div className="flex flex-col items-center space-y-2 min-w-[72px] cursor-pointer group">
+                                <div className="w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr from-indigo-500 to-purple-500 group-hover:scale-105 transition-transform">
+                                    <div className="w-full h-full rounded-full bg-background border-2 border-background flex items-center justify-center overflow-hidden">
+                                        <Avatar className="w-full h-full">
+                                            <AvatarFallback className="bg-slate-800 text-white font-bold">
+                                                {story.author.username?.[0] || 'U'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-medium text-muted-foreground truncate w-full text-center">
+                                    {story.author.username?.split(' ')[0] || 'User'}
+                                </span>
+                            </div>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-200 aspect-[9/16] flex flex-col justify-center items-center relative overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 -z-10" />
+                            <div className="absolute top-4 left-4 flex items-center gap-3">
+                                <Avatar className="border-2 border-indigo-500">
                                     <AvatarFallback className="bg-slate-800 text-white font-bold">
                                         {story.author.username?.[0] || 'U'}
                                     </AvatarFallback>
                                 </Avatar>
+                                <div className="flex flex-col">
+                                    <span className="font-bold text-sm">{story.author.username}</span>
+                                    <span className="text-xs text-slate-400">
+                                        {new Date(story.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <span className="text-xs font-medium text-muted-foreground truncate w-full text-center">
-                            {story.author.username?.split(' ')[0] || 'User'}
-                        </span>
-                    </div>
+                            <p className="text-2xl font-bold text-center p-6 text-white leading-relaxed">
+                                {story.content}
+                            </p>
+                        </DialogContent>
+                    </Dialog>
                 ))}
 
                 {/* Mock Stories (para não ficar vazio) */}

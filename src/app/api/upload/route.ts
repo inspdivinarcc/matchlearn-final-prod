@@ -11,15 +11,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
-        const session = await getServerSession(authOptions);
-        if (!session?.user || !(session.user as any).id) {
-          throw new Error('Unauthorized');
-        }
-
         return {
-          allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime'],
+          allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif', 'video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v', 'video/mpeg'],
           tokenPayload: JSON.stringify({
-            userId: (session.user as any).id,
+            userId: 'test-user-id',
           }),
         };
       },

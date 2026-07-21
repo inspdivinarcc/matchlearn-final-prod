@@ -127,7 +127,7 @@ export default function SocialPage() {
         if (!newStoryContent.trim() && !storyMediaUrl) return;
 
         setIsPostingStory(true);
-        const result = await createStory(newStoryContent || '', storyMediaUrl || undefined);
+        const result = await createStory(newStoryContent || '', storyMediaUrl);
         setIsPostingStory(false);
 
         if (result.success) {

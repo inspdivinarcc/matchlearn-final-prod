@@ -103,7 +103,7 @@ export async function toggleLike(postId: string) {
     }
 }
 
-export async function createStory(content: string, imageUrl?: string) {
+export async function createStory(content: string, imageUrl?: string | null) {
     const session = await getServerSession(authOptions);
     if (!session?.user || !(session.user as any).id) {
         return { success: false, error: 'Unauthorized' };

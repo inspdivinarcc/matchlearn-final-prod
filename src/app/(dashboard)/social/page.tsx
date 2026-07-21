@@ -37,6 +37,11 @@ export default function SocialPage() {
         loadStories();
     }, []);
 
+    const [postMediaUrl, setPostMediaUrl] = useState<string | null>(null);
+    const [postMediaType, setPostMediaType] = useState<string | null>(null);
+    const [isUploadingPostMedia, setIsUploadingPostMedia] = useState(false);
+    const postFileInputRef = useRef<HTMLInputElement>(null);
+
     const loadFeed = async () => {
         const feed = await getFeed();
         setPosts(feed);
@@ -86,12 +91,60 @@ export default function SocialPage() {
         }
     };
 
+    const handlePostFileUpload = async (file: File) => {
+        setIsUploadingPostMedia(true);
+        setUploadProgress(0);
+
+        const progressInterval = setInterval(() => {
+            setUploadProgress(prev => {
+                if (prev >= 90) {
+                    clearInterval(progressInterval);
+                    return 90;
+                }
+                return prev + 10;
+            });
+        }, 200);
+
+        try {
+            const newBlob = await upload(`posts/${Date.now()}-${file.name}`, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
+                onUploadProgress: (progress) => {
+                    setUploadProgress(progress.percentage || 0);
+                }
+            });
+
+            clearInterval(progressInterval);
+            setUploadProgress(100);
+            setPostMediaUrl(newBlob.url);
+            setPostMediaType(file.type);
+            toast.success('Mídia carregada para o post!');
+        } catch (error: any) {
+            clearInterval(progressInterval);
+            toast.error(error.message || 'Erro no upload.');
+        } finally {
+            setIsUploadingPostMedia(false);
+        }
+    };
+
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            handleFileUpload(file);
+            if (e.target.id === 'post-file-input') {
+                handlePostFileUpload(file);
+            } else {
+                handleFileUpload(file);
+            }
         }
         e.target.value = '';
+    };
+
+    const clearPostMedia = () => {
+        setPostMediaUrl(null);
+        setPostMediaType(null);
+        if (postFileInputRef.current) {
+            postFileInputRef.current.value = '';
+        }
     };
 
     const clearMedia = () => {
@@ -100,18 +153,19 @@ export default function SocialPage() {
     };
 
     const handleCreatePost = async () => {
-        if (!newPostContent.trim()) return;
+        if (!newPostContent.trim() && !postMediaUrl) return;
 
         setIsPosting(true);
-        const result = await createPost(newPostContent);
+        const result = await createPost(newPostContent || '', postMediaUrl || undefined);
         setIsPosting(false);
 
         if (result.success) {
             setNewPostContent('');
-            toast.success('Post criado com sucesso!');
+            clearPostMedia();
+            toast.success('Post publicado com sucesso!');
             loadFeed();
         } else {
-            toast.error('Erro ao criar post.');
+            toast.error(result.error || 'Erro ao publicar post.');
         }
     };
 
@@ -378,30 +432,80 @@ export default function SocialPage() {
                 ))}
             </div>
 
-            <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
+            <input
+                ref={postFileInputRef}
+                id="post-file-input"
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/quicktime"
+                className="hidden"
+                onChange={handleFileSelect}
+            />
+
+            <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm shadow-lg mb-8">
                 <CardContent className="p-4 space-y-4">
                     <div className="flex gap-4">
-                        <Avatar>
-                            <AvatarFallback>{session?.user?.name?.[0] || 'U'}</AvatarFallback>
+                        <Avatar className="w-10 h-10 border border-slate-700">
+                            <AvatarFallback className="bg-gradient-to-tr from-indigo-500 to-purple-500 text-white font-bold">
+                                {session?.user?.name?.[0] || 'U'}
+                            </AvatarFallback>
                         </Avatar>
-                        <Input
-                            placeholder="O que você está construindo hoje?"
-                            className="bg-transparent border-none focus-visible:ring-0 text-lg text-slate-200 placeholder:text-slate-500"
-                            value={newPostContent}
-                            onChange={(e) => setNewPostContent(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleCreatePost()}
-                        />
+                        <div className="flex-1 space-y-3">
+                            <Input
+                                placeholder="O que você está construindo hoje?"
+                                className="bg-slate-950/50 border-slate-800 focus-visible:ring-indigo-500 text-lg text-slate-200 placeholder:text-slate-500 py-6"
+                                value={newPostContent}
+                                onChange={(e) => setNewPostContent(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleCreatePost()}
+                            />
+                            
+                            {/* Preview da Mídia do Post */}
+                            {postMediaUrl && (
+                                <div className="relative rounded-xl overflow-hidden bg-slate-800 max-h-64 border border-slate-700">
+                                    <button
+                                        onClick={clearPostMedia}
+                                        className="absolute top-2 right-2 z-10 bg-black/60 rounded-full p-1.5 hover:bg-black/80 transition-colors"
+                                    >
+                                        <X className="w-4 h-4 text-white" />
+                                    </button>
+                                    {postMediaType?.startsWith('video') ? (
+                                        <video src={postMediaUrl} className="w-full max-h-64 object-contain" controls muted />
+                                    ) : (
+                                        <img src={postMediaUrl} alt="Preview" className="w-full max-h-64 object-contain" />
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Progresso */}
+                            {isUploadingPostMedia && (
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2 text-sm text-slate-400">
+                                        <Loader2 className="w-4 h-4 animate-spin" /> Enviando anexo...
+                                    </div>
+                                    <div className="w-full bg-slate-800 rounded-full h-2">
+                                        <motion.div className="h-full bg-indigo-500 rounded-full" animate={{ width: `${uploadProgress}%` }} />
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <div className="flex justify-between items-center pt-2 border-t border-slate-800">
+
+                    <div className="flex justify-between items-center pt-3 border-t border-slate-800">
                         <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-indigo-400" onClick={() => postFileInputRef.current?.click()} disabled={isUploadingPostMedia}>
+                                <ImageIcon className="w-5 h-5 mr-2" /> Foto
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-purple-400" onClick={() => postFileInputRef.current?.click()} disabled={isUploadingPostMedia}>
+                                <Video className="w-5 h-5 mr-2" /> Vídeo
+                            </Button>
                         </div>
                         <Button
                             size="sm"
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6 font-semibold shadow-md shadow-indigo-900/20"
                             onClick={handleCreatePost}
-                            disabled={isPosting || !newPostContent.trim()}
+                            disabled={isPosting || isUploadingPostMedia || (!newPostContent.trim() && !postMediaUrl)}
                         >
-                            {isPosting ? 'Publicando...' : 'Publicar'} <MessageCircle className="w-3 h-3 ml-2" />
+                            {isPosting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Publicando...</> : 'Publicar'} 
+                            {!isPosting && <MessageCircle className="w-4 h-4 ml-2" />}
                         </Button>
                     </div>
                 </CardContent>

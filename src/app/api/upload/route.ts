@@ -1,54 +1,39 @@
-import { put } from '@vercel/blob';
+import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
 export async function POST(request: Request): Promise<NextResponse> {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  const body = (await request.json()) as HandleUploadBody;
 
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
+  try {
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async (pathname) => {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || !(session.user as any).id) {
+          throw new Error('Unauthorized');
+        }
 
-    if (!file) {
-        return NextResponse.json({ error: 'No file provided' }, { status: 400 });
-    }
+        return {
+          allowedContentTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4', 'video/webm', 'video/quicktime'],
+          tokenPayload: JSON.stringify({
+            userId: (session.user as any).id,
+          }),
+        };
+      },
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
+        // Upload completed
+        console.log('blob upload completed', blob, tokenPayload);
+      },
+    });
 
-    // Validar tipo de arquivo
-    const allowedTypes = [
-        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-        'video/mp4', 'video/webm', 'video/quicktime'
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json(
-            { error: 'Tipo de arquivo não suportado. Use JPEG, PNG, GIF, WEBP, MP4, WEBM ou MOV.' },
-            { status: 400 }
-        );
-    }
-
-    // Limite de 10MB
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-        return NextResponse.json(
-            { error: 'Arquivo muito grande. O limite é de 10MB.' },
-            { status: 400 }
-        );
-    }
-
-    try {
-        const blob = await put(`stories/${Date.now()}-${file.name}`, file, {
-            access: 'public',
-        });
-
-        return NextResponse.json({ url: blob.url, type: file.type });
-    } catch (error) {
-        console.error('Upload error:', error);
-        return NextResponse.json(
-            { error: 'Falha no upload do arquivo.' },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(jsonResponse);
+  } catch (error) {
+    return NextResponse.json(
+      { error: (error as Error).message },
+      { status: 400 } // The webhook will retry 5 times waiting for a 200
+    );
+  }
 }

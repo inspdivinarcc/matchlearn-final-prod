@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { upload } from '@vercel/blob/client';
 
 function isVideoUrl(url: string): boolean {
     return /\.(mp4|webm|mov)(\?|$)/i.test(url) || url.includes('video');
@@ -62,25 +63,18 @@ export default function SocialPage() {
         }, 200);
 
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
+            const newBlob = await upload(`stories/${Date.now()}-${file.name}`, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
+                onUploadProgress: (progress) => {
+                    setUploadProgress(progress.percentage || 0);
+                }
             });
 
             clearInterval(progressInterval);
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Falha no upload');
-            }
-
-            const data = await response.json();
             setUploadProgress(100);
-            setStoryMediaUrl(data.url);
-            setStoryMediaType(data.type);
+            setStoryMediaUrl(newBlob.url);
+            setStoryMediaType(file.type);
             toast.success('Mídia carregada!');
         } catch (error: any) {
             clearInterval(progressInterval);
@@ -331,10 +325,10 @@ export default function SocialPage() {
                                 </span>
                             </div>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-200 flex flex-col justify-center items-center relative overflow-hidden min-h-[400px]">
+                        <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-200 flex flex-col justify-center items-center relative min-h-[400px]">
                             {/* Background Media */}
                             {story.imageUrl && (
-                                <div className="absolute inset-0 z-0">
+                                <div className="absolute inset-0 z-0 rounded-lg overflow-hidden">
                                     {isVideoUrl(story.imageUrl) ? (
                                         <video
                                             src={story.imageUrl}
@@ -351,15 +345,15 @@ export default function SocialPage() {
                                             className="w-full h-full object-cover"
                                         />
                                     )}
-                                    <div className="absolute inset-0 bg-black/30" />
+                                    <div className="absolute inset-0 bg-black/40" />
                                 </div>
                             )}
                             {!story.imageUrl && (
-                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/40 to-purple-900/40 -z-10" />
+                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg z-0" />
                             )}
 
                             {/* Header */}
-                            <div className="absolute top-4 left-4 flex items-center gap-3 z-10">
+                            <div className="absolute top-4 left-4 flex items-center gap-3 z-20">
                                 <Avatar className="border-2 border-indigo-500">
                                     <AvatarFallback className="bg-slate-800 text-white font-bold">
                                         {story.author.username?.[0] || 'U'}
@@ -375,7 +369,7 @@ export default function SocialPage() {
 
                             {/* Content */}
                             {story.content && (
-                                <p className="text-2xl font-bold text-center p-6 text-white leading-relaxed z-10 drop-shadow-lg">
+                                <p className="text-2xl font-bold text-center p-6 text-white leading-relaxed z-20 drop-shadow-lg max-h-[80%] overflow-y-auto w-full break-words">
                                     {story.content}
                                 </p>
                             )}

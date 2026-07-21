@@ -437,7 +437,7 @@ export default function SocialPage() {
                                             </span>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-200">
+                                    <Button variant="ghost" className="p-1 h-8 w-8 text-slate-400 hover:text-slate-200">
                                         <MoreHorizontal className="w-5 h-5" />
                                     </Button>
                                 </div>

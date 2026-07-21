@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Heart, MessageCircle, Share2, Send, Plus, Image as ImageIcon, Video, X, Loader2 } from 'lucide-react';
+import { MessageCircle, Heart, Share2, Plus, ImageIcon, Video, Loader2, X, MoreHorizontal, Bookmark } from 'lucide-react';
 import { createPost, getFeed, toggleLike, getStories, createStory } from '@/server/actions/social';
 import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
@@ -51,7 +51,6 @@ export default function SocialPage() {
         setIsUploading(true);
         setUploadProgress(0);
 
-        // Simular progresso enquanto faz upload
         const progressInterval = setInterval(() => {
             setUploadProgress(prev => {
                 if (prev >= 90) {
@@ -92,7 +91,6 @@ export default function SocialPage() {
         if (file) {
             handleFileUpload(file);
         }
-        // Limpar o input para permitir re-seleção do mesmo arquivo
         e.target.value = '';
     };
 
@@ -135,8 +133,7 @@ export default function SocialPage() {
         }
     };
 
-    const handleLike = async (postId: string) => {
-        // Optimistic update
+    const handleLikeToggle = async (postId: string) => {
         setPosts(currentPosts =>
             currentPosts.map(p => {
                 if (p.id === postId) {
@@ -154,7 +151,7 @@ export default function SocialPage() {
         );
 
         await toggleLike(postId);
-        loadFeed(); // Sync with server
+        loadFeed(); 
     };
 
     const mockStories = [
@@ -166,7 +163,6 @@ export default function SocialPage() {
 
     return (
         <div className="container mx-auto p-4 max-w-2xl space-y-8">
-            {/* Hidden File Input */}
             <input
                 ref={fileInputRef}
                 type="file"
@@ -175,7 +171,6 @@ export default function SocialPage() {
                 onChange={handleFileSelect}
             />
 
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
                     Social Hub
@@ -185,9 +180,7 @@ export default function SocialPage() {
                 </Button>
             </div>
 
-            {/* Stories Rail */}
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                {/* Create Story */}
                 <Dialog open={isStoryOpen} onOpenChange={(open) => {
                     setIsStoryOpen(open);
                     if (!open) {
@@ -212,7 +205,6 @@ export default function SocialPage() {
                             <DialogTitle>Novo Story</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 py-4">
-                            {/* Preview de Mídia */}
                             {storyMediaUrl && (
                                 <div className="relative rounded-xl overflow-hidden bg-slate-800 max-h-64">
                                     <button
@@ -238,7 +230,6 @@ export default function SocialPage() {
                                 </div>
                             )}
 
-                            {/* Barra de Progresso do Upload */}
                             {isUploading && (
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2 text-sm text-slate-400">
@@ -256,7 +247,6 @@ export default function SocialPage() {
                                 </div>
                             )}
 
-                            {/* Input de texto */}
                             <Input
                                 placeholder={storyMediaUrl ? "Adicione uma legenda (opcional)..." : "Compartilhe uma ideia rápida (some em 24h)..."}
                                 className="bg-slate-800 border-slate-700 text-slate-200 focus-visible:ring-indigo-500"
@@ -266,7 +256,6 @@ export default function SocialPage() {
                                 onKeyDown={(e) => e.key === 'Enter' && handleCreateStory()}
                             />
 
-                            {/* Botões de ação */}
                             <div className="flex items-center justify-between">
                                 <div className="flex gap-2">
                                     <Button
@@ -302,7 +291,6 @@ export default function SocialPage() {
                     </DialogContent>
                 </Dialog>
 
-                {/* Real DB Stories */}
                 {dbStories.map((story) => (
                     <Dialog key={story.id}>
                         <DialogTrigger asChild>
@@ -326,7 +314,6 @@ export default function SocialPage() {
                             </div>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md bg-slate-900 border-slate-800 text-slate-200 flex flex-col justify-center items-center relative min-h-[400px]">
-                            {/* Background Media */}
                             {story.imageUrl && (
                                 <div className="absolute inset-0 z-0 rounded-lg overflow-hidden">
                                     {isVideoUrl(story.imageUrl) ? (
@@ -352,7 +339,6 @@ export default function SocialPage() {
                                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 to-purple-900/50 rounded-lg z-0" />
                             )}
 
-                            {/* Header */}
                             <div className="absolute top-4 left-4 flex items-center gap-3 z-20">
                                 <Avatar className="border-2 border-indigo-500">
                                     <AvatarFallback className="bg-slate-800 text-white font-bold">
@@ -367,7 +353,6 @@ export default function SocialPage() {
                                 </div>
                             </div>
 
-                            {/* Content */}
                             {story.content && (
                                 <p className="text-2xl font-bold text-center p-6 text-white leading-relaxed z-20 drop-shadow-lg max-h-[80%] overflow-y-auto w-full break-words">
                                     {story.content}
@@ -377,7 +362,6 @@ export default function SocialPage() {
                     </Dialog>
                 ))}
 
-                {/* Mock Stories (para não ficar vazio) */}
                 {mockStories.map((story) => (
                     <div key={story.id} className="flex flex-col items-center space-y-2 min-w-[72px] cursor-pointer group">
                         <div className={`w-16 h-16 rounded-full p-[3px] bg-gradient-to-tr ${story.color} group-hover:scale-105 transition-transform`}>
@@ -394,7 +378,6 @@ export default function SocialPage() {
                 ))}
             </div>
 
-            {/* Create Post */}
             <Card className="border-slate-800 bg-slate-900/50 backdrop-blur-sm">
                 <CardContent className="p-4 space-y-4">
                     <div className="flex gap-4">
@@ -411,7 +394,6 @@ export default function SocialPage() {
                     </div>
                     <div className="flex justify-between items-center pt-2 border-t border-slate-800">
                         <div className="flex gap-2">
-                            {/* Add media buttons here later */}
                         </div>
                         <Button
                             size="sm"
@@ -419,13 +401,12 @@ export default function SocialPage() {
                             onClick={handleCreatePost}
                             disabled={isPosting || !newPostContent.trim()}
                         >
-                            {isPosting ? 'Publicando...' : 'Publicar'} <Send className="w-3 h-3 ml-2" />
+                            {isPosting ? 'Publicando...' : 'Publicar'} <MessageCircle className="w-3 h-3 ml-2" />
                         </Button>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Feed */}
             <div className="space-y-6">
                 {posts.map((post) => {
                     const isLiked = post.likes.some((l: any) => l.userId === (session?.user as any)?.id);
@@ -437,50 +418,84 @@ export default function SocialPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <Card className="border-slate-800 hover:border-indigo-500/30 transition-all duration-300 bg-slate-900/80 backdrop-blur-sm shadow-sm hover:shadow-md">
-                                <CardContent className="p-6 space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Avatar>
-                                                <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white">
-                                                    {post.author.username?.[0] || 'U'}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div>
-                                                <p className="font-bold text-slate-200">{post.author.username}</p>
-                                                <p className="text-xs text-slate-500">Level {post.author.level} • 2h</p>
+                            <Card className="border-slate-800 bg-slate-950/80 backdrop-blur-sm overflow-hidden shadow-xl rounded-xl max-w-[470px] mx-auto mb-6">
+                                <div className="flex items-center justify-between p-3 border-b border-slate-800/50">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-amber-500 p-[2px]">
+                                            <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                                                <Avatar className="w-full h-full">
+                                                    <AvatarFallback className="bg-slate-800 text-white text-xs font-bold">
+                                                        {post.author.username?.[0] || 'U'}
+                                                    </AvatarFallback>
+                                                </Avatar>
                                             </div>
                                         </div>
+                                        <div className="flex flex-col">
+                                            <span className="font-semibold text-sm text-slate-200">{post.author.username}</span>
+                                            <span className="text-[10px] text-slate-500">
+                                                {new Date(post.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-200">
+                                        <MoreHorizontal className="w-5 h-5" />
+                                    </Button>
+                                </div>
+
+                                {post.imageUrl ? (
+                                    <div className="w-full aspect-square bg-slate-900">
+                                        <img src={post.imageUrl} alt="Post" className="w-full h-full object-cover" />
+                                    </div>
+                                ) : (
+                                    <div className="w-full p-6 bg-slate-900 flex items-center justify-center min-h-[250px] border-y border-slate-800/30">
+                                        <p className="text-xl font-medium text-slate-200 text-center leading-relaxed">
+                                            {post.content}
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div className="p-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-4">
+                                            <button
+                                                onClick={() => handleLikeToggle(post.id)}
+                                                className={`transition-transform hover:scale-110 active:scale-95 ${isLiked ? 'text-rose-500' : 'text-slate-200 hover:text-slate-400'}`}
+                                            >
+                                                <Heart className={`w-7 h-7 ${isLiked ? 'fill-current' : ''}`} />
+                                            </button>
+                                            <button className="text-slate-200 hover:text-slate-400 transition-transform hover:scale-110 active:scale-95">
+                                                <MessageCircle className="w-7 h-7" />
+                                            </button>
+                                            <button className="text-slate-200 hover:text-slate-400 transition-transform hover:scale-110 active:scale-95">
+                                                <Share2 className="w-6 h-6" />
+                                            </button>
+                                        </div>
+                                        <button className="text-slate-200 hover:text-slate-400 transition-transform hover:scale-110 active:scale-95">
+                                            <Bookmark className="w-6 h-6" />
+                                        </button>
                                     </div>
 
-                                    <p className="text-slate-300 leading-relaxed text-lg">
-                                        {post.content}
-                                    </p>
+                                    <div className="font-semibold text-sm text-slate-200 mb-2">
+                                        {post.likes.length} {post.likes.length === 1 ? 'curtida' : 'curtidas'}
+                                    </div>
 
                                     {post.imageUrl && (
-                                        <div className="rounded-xl overflow-hidden bg-slate-800 aspect-video flex items-center justify-center">
-                                            {/* Placeholder for image */}
-                                            <span className="text-4xl">🖼️</span>
+                                        <div className="text-sm text-slate-200 mb-2">
+                                            <span className="font-semibold mr-2">{post.author.username}</span>
+                                            {post.content}
                                         </div>
                                     )}
 
-                                    <div className="flex items-center gap-6 pt-4 border-t border-slate-800">
-                                        <button
-                                            className={`flex items-center gap-2 text-sm font-medium transition-colors ${isLiked ? 'text-pink-500' : 'text-slate-500 hover:text-pink-500'}`}
-                                            onClick={() => handleLike(post.id)}
-                                        >
-                                            <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-                                            {post._count.likes}
-                                        </button>
-                                        <button className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-indigo-500 transition-colors">
-                                            <MessageCircle className="w-5 h-5" />
-                                            {post._count.comments}
-                                        </button>
-                                        <button className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-indigo-500 transition-colors ml-auto">
-                                            <Share2 className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                </CardContent>
+                                    {post.comments && post.comments.length > 0 ? (
+                                        <div className="text-sm text-slate-400 cursor-pointer hover:text-slate-300">
+                                            Ver todos os {post.comments.length} comentários
+                                        </div>
+                                    ) : (
+                                        <div className="text-sm text-slate-500">
+                                            Nenhum comentário ainda. Seja o primeiro!
+                                        </div>
+                                    )}
+                                </div>
                             </Card>
                         </motion.div>
                     );
